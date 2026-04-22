@@ -23,7 +23,7 @@ function Navbar() {
       <div style={{ display: "flex", gap: "1.5rem" }}>
         <Link to="/">Home</Link>
         <Link to="/recipes">Recipes</Link>
-        <Link to="/create-recipe">Create Recipe</Link>
+        {user && <Link to="/create-recipe">Create Recipe</Link>}
       </div>
 
       <div style={{ display: "flex", gap: "1.5rem" }}>

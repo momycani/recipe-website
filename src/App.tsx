@@ -15,8 +15,11 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/recipes" element={<Recipes />} />
         <Route path="/create-recipe" element={ <ProtectedRoute>
-      <CreateRecipe />
-    </ProtectedRoute>} />
+          <CreateRecipe />
+        </ProtectedRoute>} />
+        <Route path="/edit-recipe/:id" element={ <ProtectedRoute>
+          <CreateRecipe />
+        </ProtectedRoute> } />
         <Route path="/login" element={<Login />} />
         <Route path="/profile" element={<Profile />} />
       </Routes>

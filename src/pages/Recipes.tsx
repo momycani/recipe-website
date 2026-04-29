@@ -11,10 +11,31 @@ import {
 import { useAuth } from "../context/AuthContext";
 import { Link } from "react-router-dom";
 
+const categoryOptions = [
+  "All",
+  "Breakfast",
+  "Chicken",
+  "Beef",
+  "Pork",
+  "Seafood",
+  "Pasta",
+  "Casserole",
+  "Soup",
+  "Salad",
+  "Dessert",
+  "Vegetarian",
+  "Side Dish",
+  "Other",
+];
+
 function Recipes() {
   const { user, loading: authLoading } = useAuth();
   const [recipes, setRecipes] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedRecipe, setSelectedRecipe] = useState<any | null>(null);
+  const [successMessage, setSuccessMessage] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("All");
 
   useEffect(() => {
     if (authLoading) return;
@@ -25,130 +46,201 @@ function Recipes() {
       return;
     }
 
-    setLoading(true);
+    const q = query(collection(db, "recipes"), where("userId", "==", user.uid));
 
-    const q = query(
-      collection(db, "recipes"),
-      where("userId", "==", user.uid)
-    );
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const userRecipes = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
 
-    const unsubscribe = onSnapshot(
-      q,
-      (snapshot) => {
-        const userRecipes = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-
-        setRecipes(userRecipes);
-        setLoading(false);
-      },
-      (error) => {
-        console.error("Error fetching recipes:", error);
-        setLoading(false);
-      }
-    );
+      setRecipes(userRecipes);
+      setLoading(false);
+    });
 
     return () => unsubscribe();
   }, [user, authLoading]);
 
-  const handleDelete = async (id: string) => {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this recipe?"
-    );
-    if (!confirmed) return;
+const handleDelete = async (id: string) => {
+  const confirmed = window.confirm("Delete this recipe?");
+  if (!confirmed) return;
 
-    try {
-      await deleteDoc(doc(db, "recipes", id));
-    } catch (error: any) {
-      console.error("Error deleting recipe:", error);
-      alert(error.message || "Failed to delete recipe.");
+  try {
+    await deleteDoc(doc(db, "recipes", id));
+    setSuccessMessage("Recipe deleted successfully");
+
+    setTimeout(() => {
+      setSuccessMessage("");
+    }, 2500);
+
+    if (selectedRecipe?.id === id) {
+      setSelectedRecipe(null);
     }
-  };
+  } catch (error: any) {
+    console.error("Error deleting recipe:", error);
+    alert(error.message || "Failed to delete recipe.");
+  }
+};
 
   if (authLoading || loading) return <p>Loading recipes...</p>;
-
-  if (!user) {
-    return <p>Please log in to view your recipes.</p>;
-  }
-
+  if (!user) return <p>Please log in to view your recipes.</p>;
   if (!recipes.length) {
-    return <p>No recipes yet. Create your first one!</p>;
-  }
+  return (
+    <div className="empty-state">
+      <div className="empty-card">
+        <h2>No recipes yet</h2>
+        <p>Start building your collection by creating your first recipe.</p>
+
+        <Link to="/create-recipe">
+          <button className="primary-btn">Create Recipe</button>
+        </Link>
+      </div>
+    </div>
+  );
+}
+
+const filteredRecipes = recipes.filter((recipe) => {
+  const matchesSearch = recipe.title
+    .toLowerCase()
+    .includes(searchTerm.toLowerCase());
+
+  const matchesCategory =
+    selectedCategory === "All" ||
+    recipe.category === selectedCategory;
+
+  return matchesSearch && matchesCategory;
+});
 
   return (
-    <div style={{ padding: "1rem" }}>
+    <div className="recipes-page">
       <h2>Your Recipes</h2>
 
-      {recipes.map((recipe: any) => (
-        <div
-          key={recipe.id}
-          style={{
-            marginBottom: "1rem",
-            padding: "1rem",
-            border: "1px solid #ccc",
-            borderRadius: "8px",
-          }}
-        >
-          <h3>{recipe.title}</h3>
-          <p>
-            <strong>Servings:</strong> {recipe.servings}
-          </p>
+    <div className="recipe-controls">
+      <input
+        type="text"
+        placeholder="Search recipes..."
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+      />
 
-          <div style={{ marginTop: "0.75rem" }}>
-            <h4>Nutrition</h4>
-            <p>
-              <strong>Total:</strong>
-            </p>
-            <p>Calories: {recipe.nutritionTotals?.calories ?? 0}</p>
-            <p>Protein: {recipe.nutritionTotals?.protein ?? 0}g</p>
-            <p>Carbs: {recipe.nutritionTotals?.carbs ?? 0}g</p>
-            <p>Fat: {recipe.nutritionTotals?.fat ?? 0}g</p>
+      <select
+        value={selectedCategory}
+        onChange={(e) => setSelectedCategory(e.target.value)}
+      >
+        {categoryOptions.map((cat) => (
+          <option key={cat} value={cat}>
+            {cat}
+          </option>
+        ))}
+      </select>
+    </div>
 
-            <div style={{ marginTop: "0.5rem" }}>
-              <p>
-                <strong>Per Serving:</strong>
-              </p>
-              <p>Calories: {recipe.nutritionPerServing?.calories?.toFixed?.(1) ?? 0}</p>
-              <p>Protein: {recipe.nutritionPerServing?.protein?.toFixed?.(1) ?? 0}g</p>
-              <p>Carbs: {recipe.nutritionPerServing?.carbs?.toFixed?.(1) ?? 0}g</p>
-              <p>Fat: {recipe.nutritionPerServing?.fat?.toFixed?.(1) ?? 0}g</p>
-            </div>
-          </div>
-
-          <div style={{ marginTop: "0.75rem" }}>
-            <h4>Ingredients</h4>
-            <ul>
-              {recipe.ingredients?.map((ingredient: any, index: number) => (
-                <li key={index}>
-                  {ingredient.quantity} {ingredient.unit} {ingredient.name}
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div style={{ marginTop: "0.75rem" }}>
-            <h4>Instructions</h4>
-            <p>{recipe.instructions}</p>
-          </div>
-          
-          <div style={{ marginTop: "1rem", display: "flex", gap: "0.75rem" }}>
-            <Link to={`/edit-recipe/${recipe.id}`}>
-              <button type="button">Edit Recipe</button>
-            </Link>
-
-            <button type="button" onClick={() => handleDelete(recipe.id)}>
-              Delete Recipe
-            </button>
-          </div>
-
-          <div style={{ marginTop: "1rem" }}>
-            <button type="button" onClick={() => handleDelete(recipe.id)}>
-              Delete Recipe
-            </button>
-          </div>
+      {successMessage && (
+        <div className="success-toast">
+          {successMessage}
         </div>
-      ))}
+      )}
+
+      <div className="recipes-layout">
+        <div className="recipe-list">
+          {filteredRecipes.map((recipe) => (
+            <button
+              key={recipe.id}
+              type="button"
+              className={`recipe-list-item ${
+                selectedRecipe?.id === recipe.id ? "active" : ""
+              }`}
+              onClick={() => setSelectedRecipe(recipe)}
+            >
+              <div className="recipe-list-title-row">
+                <strong>{recipe.title}</strong>
+                <span className="category-pill">{recipe.category || "Other"}</span>
+              </div>
+
+              <span>{recipe.servings} servings</span>
+              <span>
+                {recipe.nutritionPerServing?.calories?.toFixed?.(1) ?? 0} cal / serving
+              </span>
+            </button>
+          ))}
+        </div>
+
+        <div className="recipe-detail-card">
+          {!selectedRecipe ? (
+            <p>Select a recipe to view details.</p>
+          ) : (
+            <>
+              <div className="recipe-card-header">
+                <h2>{selectedRecipe.title}</h2>
+                <div className="recipe-meta-row">
+                  <span>{selectedRecipe.servings} servings</span>
+                  <span className="category-pill">{selectedRecipe.category || "Other"}</span>
+                </div>
+              </div>
+
+              <section>
+                <h3>Ingredients</h3>
+                <ul className="ingredients-columns">
+                  {selectedRecipe.ingredients?.map((ingredient: any, index: number) => (
+                    <li key={index}>
+                      {ingredient.quantity} {ingredient.unit} {ingredient.name}
+                    </li>
+                  ))}
+                </ul>
+              </section>
+
+              <section>
+                <h3>Directions</h3>
+                <p>{selectedRecipe.instructions}</p>
+              </section>
+
+              <section>
+                <h3>Nutrition</h3>
+
+                <div className="nutrition-grid">
+                  <div>
+                    <h4>Total</h4>
+                    <p>Calories: {selectedRecipe.nutritionTotals?.calories ?? 0}</p>
+                    <p>Protein: {selectedRecipe.nutritionTotals?.protein ?? 0}g</p>
+                    <p>Carbs: {selectedRecipe.nutritionTotals?.carbs ?? 0}g</p>
+                    <p>Fat: {selectedRecipe.nutritionTotals?.fat ?? 0}g</p>
+                  </div>
+
+                  <div>
+                    <h4>Per Serving</h4>
+                    <p>
+                      Calories:{" "}
+                      {selectedRecipe.nutritionPerServing?.calories?.toFixed?.(1) ?? 0}
+                    </p>
+                    <p>
+                      Protein:{" "}
+                      {selectedRecipe.nutritionPerServing?.protein?.toFixed?.(1) ?? 0}g
+                    </p>
+                    <p>
+                      Carbs:{" "}
+                      {selectedRecipe.nutritionPerServing?.carbs?.toFixed?.(1) ?? 0}g
+                    </p>
+                    <p>
+                      Fat:{" "}
+                      {selectedRecipe.nutritionPerServing?.fat?.toFixed?.(1) ?? 0}g
+                    </p>
+                  </div>
+                </div>
+              </section>
+
+              <div className="recipe-actions">
+                <Link to={`/edit-recipe/${selectedRecipe.id}`}>
+                  <button type="button">Edit Recipe</button>
+                </Link>
+
+                <button type="button" onClick={() => handleDelete(selectedRecipe.id)}>
+                  Delete Recipe
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

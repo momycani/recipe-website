@@ -4,6 +4,8 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   sendPasswordResetEmail,
+  setPersistence,
+  browserLocalPersistence,
 } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 
@@ -21,6 +23,8 @@ function Login() {
     setMessage("");
 
     try {
+      await setPersistence(auth, browserLocalPersistence);
+
       if (isRegister) {
         await createUserWithEmailAndPassword(auth, email, password);
         setMessage("Account created successfully.");
@@ -30,9 +34,9 @@ function Login() {
         setMessage("Logged in successfully.");
         navigate("/recipes");
       }
-    } catch (error) {
-      setMessage("Authentication failed. Please check your details.");
-    }
+      } catch (error) {
+        setMessage("Authentication failed. Please check your details");
+      }
   };
 
   const handleForgotPassword = async () => {

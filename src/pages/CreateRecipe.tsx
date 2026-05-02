@@ -46,6 +46,9 @@ const unitOptions = [
   "serving",
   "servings",
   "whole",
+  "small",
+  "medium",
+  "large",
 ];
 
 const categoryOptions = [
@@ -77,6 +80,7 @@ function CreateRecipe() {
   const [isSaving, setIsSaving] = useState(false);
   const [isLoadingRecipe, setIsLoadingRecipe] = useState(false);
   const [category, setCategory] = useState("Other");
+  const [isPublic, setIsPublic] = useState(false);
 
   const { user } = useAuth();
   const { id } = useParams();
@@ -108,6 +112,7 @@ function CreateRecipe() {
 
         setTitle(recipeData.title || "");
         setServings(recipeData.servings || 1);
+        setIsPublic(recipeData.visibility === "public");
         setCategory(recipeData.category || "Other");
         setInstructions(recipeData.instructions || "");
         setIngredients(
@@ -199,6 +204,7 @@ function CreateRecipe() {
     setServings(1);
     setInstructions("");
     setIngredients([{ name: "", quantity: "", unit: "" }]);
+    setIsPublic(false);
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -242,6 +248,7 @@ function CreateRecipe() {
         nutritionTotals,
         nutritionPerServing,
         userId: user.uid,
+        visibility: isPublic ? "public" : "private",
         createdAt: serverTimestamp(),
       };
 
@@ -256,6 +263,7 @@ function CreateRecipe() {
           instructions,
           nutritionTotals,
           nutritionPerServing,
+          visibility: isPublic ? "public" : "private",
           updatedAt: serverTimestamp(),
         });
 
@@ -322,6 +330,18 @@ function CreateRecipe() {
               </option>
             ))}
           </select>
+        </div>
+
+        <div className="form-group">
+          <label className="checkbox-row">
+            <input
+              type="checkbox"
+              checked={isPublic}
+              onChange={(e) => setIsPublic(e.target.checked)}
+              disabled={isSaving}
+            />
+            <span>Add this recipe to the public recipe bank</span>
+          </label>
         </div>
 
         <div className="form-group">

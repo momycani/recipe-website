@@ -596,3 +596,24 @@ button:disabled {
     flex-direction: column;
   }
 }
+
+.checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+
+.recipe-bank-grid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.recipe-bank-card {
+  background: linear-gradient(180deg, #fffdf8, #ffffff);
+  border: 1px solid #e5ddd3;
+  border-radius: 22px;
+  padding: 2rem;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.08);
+}

@@ -6,6 +6,7 @@ import CreateRecipe from "./pages/CreateRecipe";
 import Login from "./pages/Login";
 import Profile from "./pages/Profile";
 import ProtectedRoute from "./components/ProtectedRoute";
+import RecipeBank from "./pages/RecipeBank";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/recipes" element={<Recipes />} />
+        <Route path="/recipe-bank" element={<RecipeBank />} />
         <Route path="/create-recipe" element={ <ProtectedRoute>
           <CreateRecipe />
         </ProtectedRoute>} />

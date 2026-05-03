@@ -1,11 +1,27 @@
 import { useEffect, useState } from "react";
 import { db } from "../firebase/firebase";
-import { collection, onSnapshot, query, where } from "firebase/firestore";
+import {
+  addDoc,
+  getDocs,
+  collection,
+  deleteDoc,
+  doc,
+  onSnapshot,
+  query,
+  serverTimestamp,
+  where,
+} from "firebase/firestore";
+import { useAuth } from "../context/AuthContext";
 
 function RecipeBank() {
   const [recipes, setRecipes] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedRecipe, setSelectedRecipe] = useState<any | null>(null);
+  const { user } = useAuth();
+  const [successMessage, setSuccessMessage] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
+  const [savedRecipeIds, setSavedRecipeIds] = useState<string[]>([]);
+  const [favoriteIds, setFavoriteIds] = useState<string[]>([]);
 
   useEffect(() => {
     const q = query(
@@ -26,7 +42,129 @@ function RecipeBank() {
     return () => unsubscribe();
   }, []);
 
-  if (loading) return <p>Loading recipe bank...</p>;
+  useEffect(() => {
+  if (!user) {
+    setSavedRecipeIds([]);
+    return;
+  }
+
+  const q = query(collection(db, "recipes"), where("userId", "==", user.uid));
+
+  const unsubscribe = onSnapshot(q, (snapshot) => {
+    const copiedIds = snapshot.docs
+      .map((doc) => doc.data().copiedFromRecipeId)
+      .filter(Boolean);
+
+    setSavedRecipeIds(copiedIds);
+  });
+
+  return () => unsubscribe();
+}, [user]);
+
+const handleSaveToMyRecipes = async () => {
+  if (isSaving) return;
+
+  if (!user) {
+    setSuccessMessage("Please log in to save recipes.");
+    return;
+  }
+
+  if (!selectedRecipe) return;
+
+  if (
+    selectedRecipe.userId === user.uid ||
+    savedRecipeIds.includes(selectedRecipe.id)
+  ) {
+    setSuccessMessage("This recipe is already in My Recipes.");
+    return;
+  }
+
+  setIsSaving(true);
+
+  try {
+    await addDoc(collection(db, "recipes"), {
+      title: selectedRecipe.title,
+      category: selectedRecipe.category || "Other",
+      servings: selectedRecipe.servings,
+      ingredients: selectedRecipe.ingredients || [],
+      instructions: selectedRecipe.instructions,
+      nutritionTotals: selectedRecipe.nutritionTotals,
+      nutritionPerServing: selectedRecipe.nutritionPerServing,
+      userId: user.uid,
+      visibility: "private",
+      copiedFromRecipeId: selectedRecipe.id,
+      createdAt: serverTimestamp(),
+    });
+
+    setSuccessMessage("Recipe saved to My Recipes!");
+
+    setTimeout(() => {
+      setSuccessMessage("");
+    }, 2500);
+  } catch (error: any) {
+    console.error("Error saving recipe copy:", error);
+    setSuccessMessage(error.message || "Failed to save recipe.");
+  } finally {
+    setIsSaving(false);
+  }
+};
+
+useEffect(() => {
+  if (!user) {
+    setFavoriteIds([]);
+    return;
+  }
+
+  const q = query(
+    collection(db, "favorites"),
+    where("userId", "==", user.uid)
+  );
+
+  const unsubscribe = onSnapshot(q, (snapshot) => {
+    const ids = snapshot.docs.map((doc) => doc.data().recipeId);
+    setFavoriteIds(ids);
+  });
+
+  return () => unsubscribe();
+}, [user]);
+
+const handleToggleFavorite = async () => {
+  if (!user || !selectedRecipe) return;
+
+  const isFavorite = favoriteIds.includes(selectedRecipe.id);
+
+  try {
+    if (isFavorite) {
+      const q = query(
+        collection(db, "favorites"),
+        where("userId", "==", user.uid),
+        where("recipeId", "==", selectedRecipe.id)
+      );
+
+      const snapshot = await getDocs(q);
+
+      snapshot.forEach(async (docItem) => {
+        await deleteDoc(doc(db, "favorites", docItem.id));
+      });
+    } else {
+      await addDoc(collection(db, "favorites"), {
+        userId: user.uid,
+        recipeId: selectedRecipe.id,
+        createdAt: serverTimestamp(),
+      });
+    }
+  } catch (error) {
+    console.error("Favorite error:", error);
+  }
+};
+
+if (loading) return <p>Loading recipe bank...</p>;
+
+const alreadySaved =
+  selectedRecipe &&
+  user &&
+  (selectedRecipe.userId === user.uid ||
+    savedRecipeIds.includes(selectedRecipe.id));
 
   return (
     <div className="recipes-page">
@@ -154,6 +292,30 @@ function RecipeBank() {
                         ) ?? 0}
                         g
                       </p>
+                    </div>
+                    {successMessage && (
+                      <div className="success-toast detail-toast">
+                        {successMessage}
+                      </div>
+                    )}
+
+                    <div className="recipe-actions">
+                      <button type="button" onClick={handleToggleFavorite}>
+                        {favoriteIds.includes(selectedRecipe.id) ? "★ Favorited" : "☆ Favorite"}
+                      </button>
+                      <button
+                          type="button"
+                          onClick={handleSaveToMyRecipes}
+                          disabled={isSaving || Boolean(alreadySaved)}
+                        >
+                          {selectedRecipe?.userId === user?.uid
+                            ? "Already in My Recipes"
+                            : alreadySaved
+                            ? "Saved to My Recipes"
+                            : isSaving
+                            ? "Saving..."
+                            : "Save to My Recipes"}
+                        </button>
                     </div>
                   </div>
                 </section>

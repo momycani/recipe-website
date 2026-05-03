@@ -617,3 +617,9 @@ button:disabled {
   padding: 2rem;
   box-shadow: 0 18px 40px rgba(0, 0, 0, 0.08);
 }
+
+.recipe-actions button:first-child {
+  background: #fff7ed;
+  border: 1px solid #f1d2b6;
+  color: #8b4513;
+}

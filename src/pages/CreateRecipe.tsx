@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import {
   collection,
   addDoc,
@@ -67,6 +67,19 @@ const categoryOptions = [
   "Other",
 ];
 
+const tagOptions = [
+  "Italian",
+  "Mexican",
+  "Asian",
+  "Gluten Free",
+  "Dairy Free",
+  "Low Carb",
+  "Vegetarian",
+  "Quick Meal",
+  "Freezer Friendly",
+  "Family Favorite",
+];
+
 function CreateRecipe() {
   const [title, setTitle] = useState("");
   const [servings, setServings] = useState(1);
@@ -81,12 +94,57 @@ function CreateRecipe() {
   const [isLoadingRecipe, setIsLoadingRecipe] = useState(false);
   const [category, setCategory] = useState("Other");
   const [isPublic, setIsPublic] = useState(false);
+  const [tags, setTags] = useState<string[]>([]);
 
   const { user } = useAuth();
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const isEditMode = Boolean(id);
+
+  useEffect(() => {
+  const state = location.state as {
+    importedTitle?: string;
+    importedIngredients?: string[];
+    importedInstructions?: string;
+  } | null;
+
+  if (!state || isEditMode) return;
+
+  if (state.importedTitle) {
+    setTitle(state.importedTitle);
+  }
+
+  if (state.importedInstructions) {
+    setInstructions(state.importedInstructions);
+  }
+
+  if (state.importedIngredients?.length) {
+    setIngredients(
+      
+  state.importedIngredients.map((ingredient) => {
+    const match = ingredient.match(
+      /^([\d¼½¾⅓⅔⅛⅜⅝⅞./\s-]+)\s*(tsp|tbsp|cup|cups|oz|lb|g|kg|ml|l|can|cans|package|packages)?\s+(.+)$/i
+    );
+
+    if (!match) {
+      return {
+        name: ingredient,
+        quantity: "",
+        unit: "",
+      };
+    }
+
+    return {
+      quantity: match[1].trim(),
+      unit: match[2] || "",
+      name: match[3].trim(),
+    };
+  })
+);
+  }
+}, [location.state, isEditMode]);
 
   useEffect(() => {
     const fetchRecipe = async () => {
@@ -114,6 +172,7 @@ function CreateRecipe() {
         setServings(recipeData.servings || 1);
         setIsPublic(recipeData.visibility === "public");
         setCategory(recipeData.category || "Other");
+        setTags(recipeData.tags || []);
         setInstructions(recipeData.instructions || "");
         setIngredients(
           recipeData.ingredients || [{ name: "", quantity: "", unit: "" }]
@@ -152,14 +211,32 @@ function CreateRecipe() {
     setIngredients(ingredients.filter((_, index) => index !== indexToRemove));
   };
 
-  const normalizeIngredientName = (name: string) => {
-    const cleanedName = name.toLowerCase().trim();
+ const normalizeIngredientName = (name: string) => {
+  const cleanedName = name.toLowerCase().trim();
 
-    if (cleanedName.endsWith("es")) return cleanedName.slice(0, -2);
-    if (cleanedName.endsWith("s")) return cleanedName.slice(0, -1);
-
-    return cleanedName;
+  const aliases: Record<string, string> = {
+    "black beans": "blackBean",
+    "black bean": "blackBean",
+    "kidney beans": "kidneyBean",
+    "kidney bean": "kidneyBean",
+    "brown sugar": "brownSugar",
+    "olive oil": "oliveOil",
+    "vegetable oil": "vegetableOil",
+    "peanut butter": "peanutButter",
+    "tomato sauce": "tomatoSauce",
+    "sour cream": "sourCream",
+    "chicken broth": "broth",
+    "beef broth": "broth",
+    "vegetable broth": "broth",
   };
+
+  if (aliases[cleanedName]) return aliases[cleanedName];
+
+  if (cleanedName.endsWith("es")) return cleanedName.slice(0, -2);
+  if (cleanedName.endsWith("s")) return cleanedName.slice(0, -1);
+
+  return cleanedName;
+};
 
   const calculateNutrition = (): Nutrition => {
     const totals: Nutrition = {
@@ -201,11 +278,20 @@ function CreateRecipe() {
   const resetForm = () => {
     setTitle("");
     setCategory("Other");
+    setTags([]);
     setServings(1);
     setInstructions("");
     setIngredients([{ name: "", quantity: "", unit: "" }]);
     setIsPublic(false);
   };
+
+  const handleTagToggle = (tag: string) => {
+  setTags((currentTags) =>
+    currentTags.includes(tag)
+      ? currentTags.filter((currentTag) => currentTag !== tag)
+      : [...currentTags, tag]
+  );
+};
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -242,6 +328,7 @@ function CreateRecipe() {
       const recipeData = {
         title,
         category,
+        tags,
         servings,
         ingredients: validIngredients,
         instructions,
@@ -258,6 +345,7 @@ function CreateRecipe() {
         await updateDoc(recipeRef, {
           title,
           category,
+          tags,
           servings,
           ingredients: validIngredients,
           instructions,
@@ -351,6 +439,24 @@ function CreateRecipe() {
         </div>
 
         <div className="form-group">
+          <label>Tags:</label>
+
+          <div className="tag-options">
+            {tagOptions.map((tag) => (
+              <label key={tag} className="tag-checkbox">
+                <input
+                  type="checkbox"
+                  checked={tags.includes(tag)}
+                  onChange={() => handleTagToggle(tag)}
+                  disabled={isSaving}
+                />
+                <span>{tag}</span>
+              </label>
+            ))}
+          </div>
+        </div>        
+
+        <div className="form-group">
           <label>Servings:</label>
           <input
             type="number"
@@ -442,6 +548,10 @@ function CreateRecipe() {
 
         <div className="preview-section">
           <h3>Nutrition</h3>
+
+          <p className="helper-text">
+            Nutrition values are estimates based on common ingredient data.
+          </p>
 
           <div className="nutrition-grid">
             <div className="nutrition-column">

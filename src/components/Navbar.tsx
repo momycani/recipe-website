@@ -25,6 +25,7 @@ function Navbar() {
         <Link to="/recipes">My Recipes</Link>
         <Link to="/recipe-bank">Recipe Bank</Link>
         {user && <Link to="/create-recipe">Create Recipe</Link>}
+        <Link to="/import-recipe">Import Recipe</Link>
       </div>
 
       <div style={{ display: "flex", gap: "1.5rem" }}>

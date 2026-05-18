@@ -623,3 +623,30 @@ button:disabled {
   border: 1px solid #f1d2b6;
   color: #8b4513;
 }
+
+.page-header {
+  margin-bottom: 1.25rem;
+}
+
+.page-description {
+  color: #6f6258;
+  margin-top: 0.35rem;
+  line-height: 1.5;
+  max-width: 700px;
+}
+
+.helper-text {
+  margin-top: 0.25rem;
+  font-size: 0.85rem;
+  color: #8a7b70;
+  line-height: 1.4;
+}
+
+.empty-list-message {
+  padding: 1rem;
+  border: 1px dashed #d6d3d1;
+  border-radius: 14px;
+  color: #6f6258;
+  background: #fffdf8;
+  text-align: center;
+}

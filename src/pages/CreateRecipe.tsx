@@ -340,7 +340,13 @@ function CreateRecipe() {
               onChange={(e) => setIsPublic(e.target.checked)}
               disabled={isSaving}
             />
-            <span>Add this recipe to the public recipe bank</span>
+            <div>
+              <span>Add this recipe to the public recipe bank</span>
+
+              <p className="helper-text">
+                Public recipes appear in the Recipe Bank for everyone to view.
+              </p>
+            </div>
           </label>
         </div>
 

@@ -55,6 +55,12 @@ function Recipes() {
       }));
 
       setRecipes(userRecipes);
+
+      setSelectedRecipe((currentSelected: any) => {
+        if (currentSelected) return currentSelected;
+        return userRecipes[0] || null;
+      });
+
       setLoading(false);
     });
 

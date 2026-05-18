@@ -13,6 +13,23 @@ import {
 } from "firebase/firestore";
 import { useAuth } from "../context/AuthContext";
 
+const categoryOptions = [
+  "All",
+  "Breakfast",
+  "Chicken",
+  "Beef",
+  "Pork",
+  "Seafood",
+  "Pasta",
+  "Casserole",
+  "Soup",
+  "Salad",
+  "Dessert",
+  "Vegetarian",
+  "Side Dish",
+  "Other",
+];
+
 function RecipeBank() {
   const [recipes, setRecipes] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -22,6 +39,8 @@ function RecipeBank() {
   const [isSaving, setIsSaving] = useState(false);
   const [savedRecipeIds, setSavedRecipeIds] = useState<string[]>([]);
   const [favoriteIds, setFavoriteIds] = useState<string[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("All");
 
   useEffect(() => {
     const q = query(
@@ -36,6 +55,12 @@ function RecipeBank() {
       }));
 
       setRecipes(publicRecipes);
+
+      setSelectedRecipe((currentSelected: any) => {
+        if (currentSelected) return currentSelected;
+        return publicRecipes[0] || null;
+      });
+
       setLoading(false);
     });
 
@@ -158,6 +183,17 @@ const handleToggleFavorite = async () => {
   }
 };
 
+const filteredRecipes = recipes.filter((recipe) => {
+  const matchesSearch = recipe.title
+    .toLowerCase()
+    .includes(searchTerm.toLowerCase());
+
+  const matchesCategory =
+    selectedCategory === "All" || recipe.category === selectedCategory;
+
+  return matchesSearch && matchesCategory;
+});
+
 if (loading) return <p>Loading recipe bank...</p>;
 
 const alreadySaved =
@@ -168,7 +204,34 @@ const alreadySaved =
 
   return (
     <div className="recipes-page">
-      <h2>Recipe Bank</h2>
+      <div className="page-header">
+        <h2>Recipe Bank</h2>
+
+      <div className="recipe-controls">
+        <input
+          type="text"
+          placeholder="Search public recipes..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+
+        <select
+          value={selectedCategory}
+          onChange={(e) => setSelectedCategory(e.target.value)}
+        >
+          {categoryOptions.map((cat) => (
+            <option key={cat} value={cat}>
+              {cat}
+            </option>
+          ))}
+        </select>
+      </div>
+
+        <p className="page-description">
+          Browse shared community recipes and save copies to your own
+          collection.
+        </p>
+      </div>
 
       {!recipes.length ? (
         <div className="empty-state">
@@ -181,7 +244,12 @@ const alreadySaved =
         <div className="recipes-layout">
           {/* LEFT LIST */}
           <div className="recipe-list">
-            {recipes.map((recipe) => (
+  {!filteredRecipes.length ? (
+    <div className="empty-list-message">
+      No recipes match your search.
+    </div>
+  ) : (
+    filteredRecipes.map((recipe) => (
               <button
                 key={recipe.id}
                 type="button"
@@ -204,7 +272,8 @@ const alreadySaved =
                   serving
                 </span>
               </button>
-            ))}
+            ))
+          )}
           </div>
 
           {/* RIGHT DETAIL CARD */}
@@ -304,18 +373,20 @@ const alreadySaved =
                         {favoriteIds.includes(selectedRecipe.id) ? "★ Favorited" : "☆ Favorite"}
                       </button>
                       <button
-                          type="button"
-                          onClick={handleSaveToMyRecipes}
-                          disabled={isSaving || Boolean(alreadySaved)}
-                        >
-                          {selectedRecipe?.userId === user?.uid
-                            ? "Already in My Recipes"
-                            : alreadySaved
-                            ? "Saved to My Recipes"
-                            : isSaving
-                            ? "Saving..."
-                            : "Save to My Recipes"}
-                        </button>
+                        type="button"
+                        onClick={handleSaveToMyRecipes}
+                        disabled={!user || isSaving || Boolean(alreadySaved)}
+                      >
+                        {!user
+                          ? "Log in to Save"
+                          : selectedRecipe?.userId === user?.uid
+                          ? "Already in My Recipes"
+                          : alreadySaved
+                          ? "Saved to My Recipes"
+                          : isSaving
+                          ? "Saving..."
+                          : "Save to My Recipes"}
+                      </button>
                     </div>
                   </div>
                 </section>

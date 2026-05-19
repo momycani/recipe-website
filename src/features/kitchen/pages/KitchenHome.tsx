@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import kitchenImage from "../../../assets/GRAMMA-BISCUIT- KITCHEN.png";
+import kitchenImage from "../../../assets/GRAMMA-BISCUIT-KITCHEN.png";
 
 function KitchenHome() {
   return (

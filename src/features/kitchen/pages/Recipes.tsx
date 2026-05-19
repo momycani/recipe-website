@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { db } from "../firebase/firebase";
+import { db } from "../../../firebase/firebase";
 import {
   collection,
   query,
@@ -8,7 +8,7 @@ import {
   deleteDoc,
   doc,
 } from "firebase/firestore";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../../../context/AuthContext";
 import { Link } from "react-router-dom";
 
 const categoryOptions = [
@@ -120,6 +120,16 @@ const filteredRecipes = recipes.filter((recipe) => {
   return (
     <div className="recipes-page">
       <h2>Your Recipes</h2>
+
+      <div className="recipes-page-actions">
+        <Link to="/create-recipe" className="primary-link">
+          Create Recipe
+        </Link>
+
+        <Link to="/recipe-bank" className="secondary-link">
+          Browse Recipe Bank
+        </Link>
+      </div>
 
     <div className="recipe-controls">
       <input

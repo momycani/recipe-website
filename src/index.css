@@ -1,3 +1,12 @@
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  overflow-x: hidden;
+}
+
 .create-recipe-page {
   max-width: 760px;
   margin: 0 auto;
@@ -842,4 +851,723 @@ button:disabled {
   color: #8b4513;
   font-size: 0.78rem;
   font-weight: 600;
+}
+
+/* =========================================================
+   GLOBAL / BASE STYLES
+   ========================================================= */
+
+/* 
+  Keep truly global styles near the top of index.css:
+  - body
+  - buttons
+  - links
+  - form defaults
+  - reusable variables
+*/
+
+
+/* =========================================================
+   SHARED BUTTONS / LINKS
+   Used across multiple pages
+   ========================================================= */
+
+.primary-link,
+.secondary-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 20px;
+  border-radius: 999px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+}
+
+.primary-link {
+  background: peru;
+  color: #fff;
+  box-shadow: 0 12px 24px rgba(120, 72, 30, 0.18);
+}
+
+.primary-link:hover {
+  transform: translateY(-2px);
+  filter: brightness(0.96);
+}
+
+.secondary-link {
+  background: #fff8ef;
+  color: #5f3924;
+  border: 1px solid rgba(205, 133, 63, 0.28);
+}
+
+.secondary-link:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 22px rgba(73, 42, 20, 0.08);
+}
+
+
+/* =========================================================
+   GRAMMA'S PLACE PAGE
+   Main landing page
+   File: src/features/grammasPlace/pages/GrammasPlace.tsx
+   ========================================================= */
+
+/* 
+  Future Gramma's Place styles can go here.
+
+  Suggested naming:
+  .grammas-place-page
+  .grammas-place-hero
+  .grammas-place-bio-card
+  .grammas-place-section-grid
+  .grammas-place-section-card
+*/
+
+.grammas-place-page {
+  width: min(1120px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 48px 0 64px;
+}
+
+.grammas-place-account-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 24px;
+}
+
+.grammas-place-hero {
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: 40px;
+  align-items: center;
+}
+
+.grammas-place-content {
+  max-width: 650px;
+}
+
+.grammas-place-eyebrow {
+  margin: 0 0 10px;
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: peru;
+}
+
+.grammas-place-hero h1 {
+  margin: 0;
+  font-size: clamp(3rem, 6vw, 5rem);
+  line-height: 0.95;
+  color: #3b2416;
+}
+
+.grammas-place-tagline {
+  margin: 20px 0 26px;
+  max-width: 590px;
+  font-size: 1.18rem;
+  line-height: 1.7;
+  color: #5f4433;
+}
+
+.grammas-place-bio-card {
+  padding: 24px;
+  border-radius: 24px;
+  background: #fff8ef;
+  border: 1px solid rgba(205, 133, 63, 0.25);
+  box-shadow: 0 18px 45px rgba(73, 42, 20, 0.08);
+}
+
+.grammas-place-bio-card h2 {
+  margin: 0 0 12px;
+  color: #3b2416;
+}
+
+.grammas-place-bio-card p {
+  margin: 0 0 12px;
+  line-height: 1.7;
+  color: #5f4433;
+}
+
+.grammas-place-bio-card p:last-child {
+  margin-bottom: 0;
+}
+
+.grammas-place-image-wrap {
+  display: flex;
+  justify-content: center;
+}
+
+.grammas-place-image {
+  width: min(100%, 430px);
+  border-radius: 32px;
+  object-fit: cover;
+  box-shadow: 0 24px 60px rgba(73, 42, 20, 0.18);
+}
+
+.grammas-place-section-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  margin-top: 42px;
+}
+
+.grammas-place-section-card {
+  padding: 24px;
+  border-radius: 22px;
+  background: #fff;
+  border: 1px solid rgba(205, 133, 63, 0.2);
+  box-shadow: 0 14px 35px rgba(73, 42, 20, 0.08);
+}
+
+.grammas-place-section-card h3 {
+  margin: 0 0 10px;
+  color: #3b2416;
+}
+
+.grammas-place-section-card p {
+  margin: 0 0 18px;
+  line-height: 1.6;
+  color: #5f4433;
+}
+
+.coming-soon-card {
+  opacity: 0.78;
+}
+
+.disabled-link {
+  cursor: not-allowed;
+  opacity: 0.75;
+}
+
+/* =========================================================
+   PROFILE PAGE
+   File: src/pages/Profile.tsx
+   ========================================================= */
+
+.profile-page {
+  width: min(920px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 48px 0 64px;
+}
+
+.profile-card {
+  padding: 32px;
+  border-radius: 28px;
+  background: #fff8ef;
+  border: 1px solid rgba(205, 133, 63, 0.25);
+  box-shadow: 0 18px 45px rgba(73, 42, 20, 0.08);
+}
+
+.profile-eyebrow {
+  margin: 0 0 10px;
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: peru;
+}
+
+.profile-card h1 {
+  margin: 0 0 22px;
+  color: #3b2416;
+  font-size: clamp(2rem, 4vw, 3.5rem);
+}
+
+.profile-info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  margin: 24px 0;
+}
+
+.profile-info-item {
+  padding: 18px;
+  border-radius: 18px;
+  background: #fff;
+  border: 1px solid rgba(205, 133, 63, 0.2);
+}
+
+.profile-info-item span {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #9b5a26;
+}
+
+.profile-info-item strong {
+  display: block;
+  color: #3b2416;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.profile-password-card {
+  margin-top: 24px;
+  padding: 22px;
+  border-radius: 22px;
+  background: #ffffff;
+  border: 1px solid rgba(205, 133, 63, 0.22);
+}
+
+.profile-password-card h2 {
+  margin: 0 0 10px;
+  color: #3b2416;
+}
+
+.profile-password-card p {
+  margin: 0 0 16px;
+  line-height: 1.6;
+  color: #5f4433;
+}
+
+.profile-reset-button {
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.profile-message {
+  margin-top: 14px;
+  font-weight: 700;
+  color: #5f3924;
+}
+
+.profile-page-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+@media (max-width: 700px) {
+  .profile-info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-card {
+    padding: 24px;
+  }
+}
+
+
+/* =========================================================
+   KITCHEN HOME PAGE
+   File: src/features/kitchen/pages/KitchenHome.tsx
+   ========================================================= */
+
+.kitchen-home-page {
+  width: min(1120px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 48px 0 64px;
+}
+
+.kitchen-hero {
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: 40px;
+  align-items: center;
+}
+
+.kitchen-hero-content {
+  max-width: 640px;
+}
+
+.kitchen-eyebrow {
+  margin: 0 0 10px;
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: peru;
+}
+
+.kitchen-hero h1 {
+  margin: 0;
+  font-size: clamp(2.5rem, 5vw, 4.75rem);
+  line-height: 0.95;
+  color: #3b2416;
+}
+
+.kitchen-description {
+  margin: 20px 0 28px;
+  max-width: 590px;
+  font-size: 1.12rem;
+  line-height: 1.7;
+  color: #5f4433;
+}
+
+.kitchen-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+.kitchen-hero-image-wrap {
+  display: flex;
+  justify-content: center;
+}
+
+.kitchen-hero-image {
+  width: min(100%, 430px);
+  border-radius: 32px;
+  object-fit: cover;
+  box-shadow: 0 24px 60px rgba(73, 42, 20, 0.18);
+}
+
+.kitchen-feature-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  margin-top: 42px;
+}
+
+.kitchen-feature-card {
+  padding: 24px;
+  border-radius: 22px;
+  background: #fff;
+  border: 1px solid rgba(205, 133, 63, 0.2);
+  box-shadow: 0 14px 35px rgba(73, 42, 20, 0.08);
+}
+
+.kitchen-feature-card h3 {
+  margin: 0 0 10px;
+  color: #3b2416;
+}
+
+.kitchen-feature-card p {
+  margin: 0;
+  line-height: 1.6;
+  color: #5f4433;
+}
+
+/* =========================================================
+   KITCHEN NAVBAR
+   File: src/features/kitchen/components/KitchenNavbar.tsx
+   ========================================================= */
+
+.kitchen-navbar {
+  width: 100%;
+  min-height: 68px;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  background: #fff8ef;
+  border-bottom: 1px solid rgba(205, 133, 63, 0.24);
+  box-shadow: 0 8px 24px rgba(73, 42, 20, 0.04);
+  overflow: hidden;
+}
+
+.kitchen-navbar-right {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 18px;
+  flex-shrink: 0;
+}
+
+.kitchen-navbar-left {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  min-width: 0;
+}
+
+.kitchen-navbar-left,
+.kitchen-navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.kitchen-nav-link,
+.kitchen-nav-brand {
+  color: #4a2c1c;
+  text-decoration: none;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.kitchen-nav-link {
+  font-size: 0.98rem;
+}
+
+.kitchen-nav-brand {
+  padding-left: 18px;
+  border-left: 1px solid rgba(205, 133, 63, 0.35);
+  font-size: 1.05rem;
+  color: #9b5a26;
+}
+
+.kitchen-nav-link:hover,
+.kitchen-nav-brand:hover {
+  color: peru;
+}
+
+.kitchen-logout-button {
+  min-height: 38px;
+  padding: 0 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(205, 133, 63, 0.35);
+  background: #ffffff;
+  color: #4a2c1c;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.kitchen-logout-button:hover {
+  background: #fff3e4;
+  color: peru;
+}
+
+/* =========================================================
+   KITCHEN RECIPES PAGE
+   File: src/features/kitchen/pages/Recipes.tsx
+   ========================================================= */
+
+/* 
+  Recipe list/card styles can go here.
+
+  Suggested naming:
+  .recipes-page
+  .recipes-header
+  .recipes-grid
+  .recipe-card
+  .recipe-card-header
+  .recipe-card-actions
+  .category-badge
+*/
+
+/* =========================================================
+   CREATE / EDIT RECIPE PAGE
+   File: src/features/kitchen/pages/CreateRecipe.tsx
+   ========================================================= */
+
+.create-recipe-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 18px 0 28px;
+}
+
+/* =========================================================
+   RECIPES PAGE ACTIONS
+   File: src/features/kitchen/pages/Recipes.tsx
+   ========================================================= */
+
+.recipes-page-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 18px 0 28px;
+}
+
+
+/* =========================================================
+   CREATE / EDIT RECIPE PAGE
+   File: src/features/kitchen/pages/CreateRecipe.tsx
+   ========================================================= */
+
+/* 
+  Create/Edit recipe form styles can go here.
+
+  Suggested naming:
+  .create-recipe-page
+  .recipe-form
+  .ingredient-row
+  .nutrition-panel
+  .form-actions
+*/
+
+
+/* =========================================================
+   RECIPE BANK PAGE
+   File: src/features/kitchen/pages/RecipeBank.tsx
+   ========================================================= */
+
+/* 
+  Recipe Bank styles can go here.
+
+  Suggested naming:
+  .recipe-bank-page
+  .recipe-bank-grid
+  .recipe-bank-card
+*/
+
+
+/* =========================================================
+   IMPORT RECIPE PAGE
+   File: src/features/kitchen/pages/ImportRecipe.tsx
+   ========================================================= */
+
+/* 
+  Import Recipe styles can go here.
+
+  Suggested naming:
+  .import-recipe-page
+  .import-recipe-form
+  .import-preview-card
+*/
+
+.import-recipe-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 18px 0 28px;
+}
+
+/* =========================================================
+   GRAMMA'S GARDEN PAGE
+   File: src/features/garden/pages/GardenHome.tsx
+   ========================================================= */
+
+/* 
+  Future Garden styles can go here.
+
+  Suggested naming:
+  .garden-page
+  .garden-hero
+  .garden-card
+*/
+
+
+/* =========================================================
+   GRAMMA'S CORNER PAGE
+   File: src/features/corner/pages/CornerHome.tsx
+   ========================================================= */
+
+/* 
+  Future Corner styles can go here.
+
+  Suggested naming:
+  .corner-page
+  .corner-hero
+  .corner-card
+*/
+
+
+/* =========================================================
+   RESPONSIVE STYLES
+   Keep page-specific responsive adjustments grouped here
+   ========================================================= */
+
+@media (max-width: 850px) {
+  .kitchen-hero {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .kitchen-hero-content {
+    margin: 0 auto;
+  }
+
+  .kitchen-description {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .kitchen-actions {
+    justify-content: center;
+  }
+
+  .kitchen-feature-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 520px) {
+  .kitchen-home-page {
+    width: min(100% - 24px, 1120px);
+    padding-top: 32px;
+  }
+
+  .kitchen-actions {
+    flex-direction: column;
+  }
+
+  .primary-link,
+  .secondary-link {
+    width: 100%;
+  }
+
+  .kitchen-feature-card {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 850px) {
+  .grammas-place-hero {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .grammas-place-content {
+    margin: 0 auto;
+  }
+
+  .grammas-place-tagline {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .grammas-place-section-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 520px) {
+  .grammas-place-page {
+    width: min(100% - 24px, 1120px);
+    padding-top: 32px;
+  }
+
+  .grammas-place-section-card {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 650px) {
+  .kitchen-navbar {
+    min-height: auto;
+    padding: 16px 20px;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .kitchen-navbar-left,
+  .kitchen-navbar-right {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .kitchen-nav-brand {
+    padding-left: 14px;
+  }
+}
+
+@media (max-width: 700px) {
+  .kitchen-navbar {
+    min-height: auto;
+    padding: 14px 18px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .kitchen-navbar-left,
+  .kitchen-navbar-right {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .kitchen-nav-brand {
+    padding-left: 14px;
+  }
 }

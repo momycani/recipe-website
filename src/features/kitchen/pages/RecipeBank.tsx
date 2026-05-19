@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { db } from "../firebase/firebase";
+import { db } from "../../../firebase/firebase";
 import {
   addDoc,
   getDocs,
@@ -11,7 +11,8 @@ import {
   serverTimestamp,
   where,
 } from "firebase/firestore";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../../../context/AuthContext";
+import { Link } from "react-router-dom";
 
 const categoryOptions = [
   "All",
@@ -206,6 +207,16 @@ const alreadySaved =
     <div className="recipes-page">
       <div className="page-header">
         <h2>Recipe Bank</h2>
+
+        <div className="recipes-page-actions">
+          <Link to="/create-recipe" className="primary-link">
+            Create Recipe
+          </Link>
+
+          <Link to="/recipes" className="secondary-link">
+            My Recipes
+          </Link>
+        </div>
 
       <div className="recipe-controls">
         <input

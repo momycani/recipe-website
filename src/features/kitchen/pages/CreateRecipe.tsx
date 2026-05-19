@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import {
   collection,
   addDoc,
@@ -8,8 +8,8 @@ import {
   getDoc,
   updateDoc,
 } from "firebase/firestore";
-import { db } from "../firebase/firebase";
-import { useAuth } from "../context/AuthContext";
+import { db } from "../../../firebase/firebase";
+import { useAuth } from "../../../context/AuthContext";
 import { nutritionData } from "../data/nutritionData";
 import type { Ingredient, Nutrition } from "../types/nutrition";
 
@@ -387,6 +387,26 @@ function CreateRecipe() {
       </datalist>
 
       <h2>{isEditMode ? "Edit Recipe" : "Create Recipe"}</h2>
+
+      {!isEditMode && (
+        <div className="create-recipe-actions">
+          <Link to="/create-recipe" className="primary-link">
+            Manual Entry
+          </Link>
+
+          <Link to="/import-recipe" className="secondary-link">
+            Import Recipe
+          </Link>
+
+          <Link to="/recipes" className="secondary-link">
+            My Recipes
+          </Link>
+
+          <Link to="/recipe-bank" className="secondary-link">
+            Recipe Bank
+          </Link>
+        </div>
+      )}
 
       {successMessage && <p className="success-message">{successMessage}</p>}
       {error && <p className="error-message">{error}</p>}

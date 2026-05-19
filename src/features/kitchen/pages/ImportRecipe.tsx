@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function ImportRecipe() {
   const [recipeText, setRecipeText] = useState("");
@@ -77,6 +77,20 @@ function ImportRecipe() {
           Paste a simple recipe below. You can review and edit the detected
           title, ingredients, and instructions before creating the recipe.
         </p>
+
+        <div className="import-recipe-actions">
+          <Link to="/create-recipe" className="secondary-link">
+            Manual Entry
+          </Link>
+
+          <Link to="/recipes" className="secondary-link">
+            My Recipes
+          </Link>
+
+          <Link to="/recipe-bank" className="secondary-link">
+            Recipe Bank
+          </Link>
+        </div>
 
         <p className="helper-text">
           Simple ingredient lists and instruction sections work best. Recipes

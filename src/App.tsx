@@ -1,31 +1,71 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
-import Recipes from "./pages/Recipes";
-import Navbar from "./components/Navbar";
-import CreateRecipe from "./pages/CreateRecipe";
+import Recipes from "./features/kitchen/pages/Recipes";
+
+import CreateRecipe from "./features/kitchen/pages/CreateRecipe";
 import Login from "./pages/Login";
 import Profile from "./pages/Profile";
 import ProtectedRoute from "./components/ProtectedRoute";
-import RecipeBank from "./pages/RecipeBank";
-import ImportRecipe from "./pages/ImportRecipe";
+import RecipeBank from "./features/kitchen/pages/RecipeBank";
+import ImportRecipe from "./features/kitchen/pages/ImportRecipe";
+import KitchenHome from "./features/kitchen/pages/KitchenHome.tsx";
+import KitchenLayout from "./features/kitchen/KitchenLayout";
 
 function App() {
   return (
     <BrowserRouter>
-      <Navbar />
+     
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/recipes" element={<Recipes />} />
-        <Route path="/recipe-bank" element={<RecipeBank />} />
-        <Route path="/import-recipe" element={<ImportRecipe />} />
-        <Route path="/create-recipe" element={ <ProtectedRoute>
-          <CreateRecipe />
-        </ProtectedRoute>} />
-        <Route path="/edit-recipe/:id" element={ <ProtectedRoute>
-          <CreateRecipe />
-        </ProtectedRoute> } />
+
+        <Route element={<KitchenLayout />}>
+          <Route path="/kitchen" element={<KitchenHome />} />
+         <Route
+            path="/recipes"
+            element={
+              <ProtectedRoute>
+                <Recipes />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/recipe-bank" element={<RecipeBank />} />
+          <Route
+            path="/import-recipe"
+            element={
+              <ProtectedRoute>
+                <ImportRecipe />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/create-recipe"
+            element={
+              <ProtectedRoute>
+                <CreateRecipe />
+              </ProtectedRoute>
+            }
+          />
+        </Route>
+
+        <Route
+          path="/edit-recipe/:id"
+          element={
+            <ProtectedRoute>
+              <CreateRecipe />
+            </ProtectedRoute>
+          }
+        />
+
         <Route path="/login" element={<Login />} />
-        <Route path="/profile" element={<Profile />} />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </BrowserRouter>
   );

@@ -1,7 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Recipes from "./features/kitchen/pages/Recipes";
-
 import CreateRecipe from "./features/kitchen/pages/CreateRecipe";
 import Login from "./pages/Login";
 import Profile from "./pages/Profile";
@@ -10,6 +9,9 @@ import RecipeBank from "./features/kitchen/pages/RecipeBank";
 import ImportRecipe from "./features/kitchen/pages/ImportRecipe";
 import KitchenHome from "./features/kitchen/pages/KitchenHome.tsx";
 import KitchenLayout from "./features/kitchen/KitchenLayout";
+import NutritionHome from "./features/kitchen/nutrition/pages/NutritionHome";
+import CanningHome from "./features/kitchen/canning/pages/CanningHome";
+import PetsHome from "./features/kitchen/pets/pages/PetsHome";
 
 function App() {
   return (
@@ -66,6 +68,10 @@ function App() {
             </ProtectedRoute>
           }
         />
+
+        <Route path="/nutrition" element={<NutritionHome />} />
+        <Route path="/canning" element={<CanningHome />} />
+        <Route path="/pets" element={<PetsHome />} />
       </Routes>
     </BrowserRouter>
   );

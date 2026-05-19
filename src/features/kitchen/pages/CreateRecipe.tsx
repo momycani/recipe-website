@@ -449,7 +449,7 @@ function CreateRecipe() {
               disabled={isSaving}
             />
             <div>
-              <span>Add this recipe to the public recipe bank</span>
+              <span>Share this recipe to the public recipe bank</span>
 
               <p className="helper-text">
                 Public recipes appear in the Recipe Bank for everyone to view.

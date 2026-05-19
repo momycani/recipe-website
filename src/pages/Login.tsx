@@ -7,7 +7,7 @@ import {
   setPersistence,
   browserLocalPersistence,
 } from "firebase/auth";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -26,17 +26,17 @@ function Login() {
       await setPersistence(auth, browserLocalPersistence);
 
       if (isRegister) {
-        await createUserWithEmailAndPassword(auth, email, password);
+        await createUserWithEmailAndPassword(auth, email.trim(), password);
         setMessage("Account created successfully.");
         navigate("/recipes");
       } else {
-        await signInWithEmailAndPassword(auth, email, password);
+        await signInWithEmailAndPassword(auth, email.trim(), password);
         setMessage("Logged in successfully.");
         navigate("/recipes");
       }
-      } catch (error) {
-        setMessage("Authentication failed. Please check your details");
-      }
+    } catch (error) {
+      setMessage("Authentication failed. Please check your email and password.");
+    }
   };
 
   const handleForgotPassword = async () => {
@@ -46,128 +46,97 @@ function Login() {
     }
 
     try {
-      await sendPasswordResetEmail(auth, email);
-      setMessage("Password reset email sent.");
+      await sendPasswordResetEmail(auth, email.trim());
+      setMessage(
+        "Password reset email sent. Please check your inbox, spam, or junk folder."
+      );
     } catch (error) {
       setMessage("Could not send reset email. Check the email address.");
     }
   };
 
-  
-
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        minHeight: "70vh",
-      }}
-    >
-      <div
-        style={{
-          width: "100%",
-          maxWidth: "350px",
-          padding: "2rem",
-          border: "1px solid #ccc",
-          borderRadius: "8px",
-          background: "#fff",
-        }}
-      >
-        <h2 style={{ textAlign: "center", marginBottom: "1.5rem" }}>
-          {isRegister ? "Register" : "Login"}
-        </h2>
+    <main className="login-page">
+      <section className="login-card">
+        <p className="login-eyebrow">Gramma&apos;s Kitchen</p>
 
-        <form
-          onSubmit={handleAuth}
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: "1rem",
-          }}
-        >
-          <div>
-            <label>Email:</label>
-            <br />
+        <h1>{isRegister ? "Create Account" : "Welcome Back"}</h1>
+
+        <p className="login-description">
+          {isRegister
+            ? "Create an account to save recipes, manage your collection, and use Gramma's Kitchen tools."
+            : "Log in to access your saved recipes, profile, and kitchen tools."}
+        </p>
+
+        <form onSubmit={handleAuth} className="login-form">
+          <label>
+            Email
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              style={{ width: "100%", boxSizing: "border-box" }}
+              autoComplete="email"
+              required
             />
-          </div>
+          </label>
 
-          <div>
-            <label>Password:</label>
-            <br />
-            <div
-              style={{
-                position: "relative",
-                width: "100%",
-              }}
-            >
+          <label>
+            Password
+            <div className="password-field-row">
               <input
                 type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                style={{
-                  width: "100%",
-                  boxSizing: "border-box",
-                  paddingRight: "2.5rem",
-                }}
+                autoComplete={isRegister ? "new-password" : "current-password"}
+                required
               />
 
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                style={{
-                  position: "absolute",
-                  right: "0.5rem",
-                  top: "50%",
-                  transform: "translateY(-50%)",
-                  background: "none",
-                  border: "none",
-                  cursor: "pointer",
-                  padding: 0,
-                }}
+                className="show-password-button"
                 aria-label={showPassword ? "Hide password" : "Show password"}
               >
-                {showPassword ? "🙈" : "👁️"}
+                {showPassword ? "Hide" : "Show"}
               </button>
             </div>
-          </div>
+          </label>
 
-          <button type="submit" style={{ width: "100%" }}>
-            {isRegister ? "Register" : "Login"}
+          <button type="submit" className="login-button">
+            {isRegister ? "Create Account" : "Login"}
           </button>
         </form>
 
-        <p style={{ marginTop: "1rem", textAlign: "center" }}>{message}</p>
+        {message && <p className="login-message">{message}</p>}
 
         {!isRegister && (
           <button
             type="button"
             onClick={handleForgotPassword}
-            style={{ marginTop: "0.5rem", width: "100%" }}
+            className="forgot-password-button"
           >
             Forgot Password?
           </button>
         )}
 
-        <div style={{ marginTop: "1rem" }}>
-          <button
-            type="button"
-            onClick={() => {
-              setIsRegister(!isRegister);
-              setMessage("");
-            }}
-            style={{ width: "100%" }}
-          >
-            Switch to {isRegister ? "Login" : "Register"}
-          </button>
-        </div>
-      </div>
-    </div>
+        <button
+          type="button"
+          onClick={() => {
+            setIsRegister(!isRegister);
+            setMessage("");
+          }}
+          className="login-toggle-button"
+        >
+          {isRegister
+            ? "Already have an account? Login"
+            : "Need an account? Register"}
+        </button>
+
+        <Link to="/" className="login-home-link">
+          Back to Gramma&apos;s Place
+        </Link>
+      </section>
+    </main>
   );
 }
 

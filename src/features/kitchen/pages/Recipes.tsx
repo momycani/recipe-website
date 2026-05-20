@@ -190,20 +190,20 @@ const filteredRecipes = recipes.filter((recipe) => {
                 <h2>{selectedRecipe.title}</h2>
 
                 <div className="recipe-meta-row">
-                  <span>{selectedRecipe.servings} servings</span>
-                  <span className="category-pill">{selectedRecipe.category || "Other"}</span>
-                </div>
+                  <span className="servings-pill">{selectedRecipe.servings} servings</span>
 
-                {selectedRecipe.tags?.length > 0 && (
-                  <div className="recipe-tags">
-                    {selectedRecipe.tags.map((tag: string) => (
-                      <span key={tag} className="recipe-tag">
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                )}
-              </div>
+                  <span className="category-pill">
+                    {selectedRecipe.category || "Other"}
+                  </span>
+
+                  {selectedRecipe.tags?.map((tag: string) => (
+                    <span key={tag} className="recipe-tag">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+                
+                </div>
 
               <section>
                 <h3>Ingredients</h3>

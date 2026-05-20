@@ -11,6 +11,8 @@ import KitchenHome from "./features/kitchen/pages/KitchenHome.tsx";
 import KitchenLayout from "./features/kitchen/KitchenLayout";
 import NutritionHome from "./features/kitchen/nutrition/pages/NutritionHome";
 import CanningHome from "./features/kitchen/canning/pages/CanningHome";
+import SafeCanning from "./features/kitchen/canning/pages/SafeCanning";
+import CreateCanningRecipe from "./features/kitchen/canning/pages/CreateCanningRecipe"
 import PetsHome from "./features/kitchen/pets/pages/PetsHome";
 
 function App() {
@@ -71,6 +73,8 @@ function App() {
 
         <Route path="/nutrition" element={<NutritionHome />} />
         <Route path="/canning" element={<CanningHome />} />
+        <Route path="/canning/safe-canning" element={<SafeCanning />} />
+        <Route path="/canning/create" element={<CreateCanningRecipe />} />
         <Route path="/pets" element={<PetsHome />} />
       </Routes>
     </BrowserRouter>

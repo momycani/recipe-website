@@ -13,44 +13,6 @@ import { useAuth } from "../../../context/AuthContext";
 import { nutritionData } from "../data/nutritionData";
 import type { Ingredient, Nutrition } from "../types/nutrition";
 
-const unitOptions = [
-  "tsp",
-  "tbsp",
-  "cup",
-  "cups",
-  "fl oz",
-  "pint",
-  "quart",
-  "gallon",
-  "ml",
-  "l",
-  "oz",
-  "lb",
-  "g",
-  "kg",
-  "pinch",
-  "dash",
-  "clove",
-  "cloves",
-  "slice",
-  "slices",
-  "piece",
-  "pieces",
-  "each",
-  "box",
-  "boxes",
-  "can",
-  "cans",
-  "package",
-  "packages",
-  "serving",
-  "servings",
-  "whole",
-  "small",
-  "medium",
-  "large",
-];
-
 const categoryOptions = [
   "Breakfast",
   "Chicken",
@@ -84,9 +46,7 @@ function CreateRecipe() {
   const [title, setTitle] = useState("");
   const [servings, setServings] = useState(1);
   const [instructions, setInstructions] = useState("");
-  const [ingredients, setIngredients] = useState<Ingredient[]>([
-    { name: "", quantity: "", unit: "" },
-  ]);
+  const [ingredientsText, setIngredientsText] = useState("");
 
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
@@ -103,36 +63,18 @@ function CreateRecipe() {
 
   const isEditMode = Boolean(id);
 
-  useEffect(() => {
-  const state = location.state as {
-    importedTitle?: string;
-    importedIngredients?: string[];
-    importedInstructions?: string;
-  } | null;
+  const parseIngredientLine = (line: string): Ingredient => {
+    const trimmedLine = line.trim();
 
-  if (!state || isEditMode) return;
-
-  if (state.importedTitle) {
-    setTitle(state.importedTitle);
-  }
-
-  if (state.importedInstructions) {
-    setInstructions(state.importedInstructions);
-  }
-
-  if (state.importedIngredients?.length) {
-    setIngredients(
-      
-  state.importedIngredients.map((ingredient) => {
-    const match = ingredient.match(
-      /^([\d¼½¾⅓⅔⅛⅜⅝⅞./\s-]+)\s*(tsp|tbsp|cup|cups|oz|lb|g|kg|ml|l|can|cans|package|packages)?\s+(.+)$/i
+    const match = trimmedLine.match(
+      /^([\d¼½¾⅓⅔⅛⅜⅝⅞./\s-]+)\s*(tsp|tbsp|cup|cups|fl oz|oz|lb|lbs|g|kg|ml|l|can|cans|package|packages|clove|cloves|slice|slices|piece|pieces|small|medium|large)?\s+(.+)$/i
     );
 
     if (!match) {
       return {
-        name: ingredient,
         quantity: "",
         unit: "",
+        name: trimmedLine,
       };
     }
 
@@ -141,10 +83,35 @@ function CreateRecipe() {
       unit: match[2] || "",
       name: match[3].trim(),
     };
-  })
-);
-  }
-}, [location.state, isEditMode]);
+  };
+
+  const parsedIngredients: Ingredient[] = ingredientsText
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map(parseIngredientLine);
+
+  useEffect(() => {
+    const state = location.state as {
+      importedTitle?: string;
+      importedIngredients?: string[];
+      importedInstructions?: string;
+    } | null;
+
+    if (!state || isEditMode) return;
+
+    if (state.importedTitle) {
+      setTitle(state.importedTitle);
+    }
+
+    if (state.importedInstructions) {
+      setInstructions(state.importedInstructions);
+    }
+
+    if (state.importedIngredients?.length) {
+      setIngredientsText(state.importedIngredients.join("\n"));
+    }
+  }, [location.state, isEditMode]);
 
   useEffect(() => {
     const fetchRecipe = async () => {
@@ -174,9 +141,19 @@ function CreateRecipe() {
         setCategory(recipeData.category || "Other");
         setTags(recipeData.tags || []);
         setInstructions(recipeData.instructions || "");
-        setIngredients(
-          recipeData.ingredients || [{ name: "", quantity: "", unit: "" }]
-        );
+
+        const existingIngredients = recipeData.ingredients || [];
+
+        const ingredientLines = existingIngredients
+          .map((ingredient: Ingredient) =>
+            `${ingredient.quantity || ""} ${ingredient.unit || ""} ${
+              ingredient.name || ""
+            }`.trim()
+          )
+          .filter(Boolean)
+          .join("\n");
+
+        setIngredientsText(ingredientLines);
       } catch (error) {
         console.error("Error loading recipe:", error);
         setError("Failed to load recipe.");
@@ -188,55 +165,32 @@ function CreateRecipe() {
     fetchRecipe();
   }, [id, user]);
 
-  const handleIngredientChange = (
-    index: number,
-    field: keyof Ingredient,
-    value: string
-  ) => {
-    const updatedIngredients = [...ingredients];
-    updatedIngredients[index] = {
-      ...updatedIngredients[index],
-      [field]: value,
+  const normalizeIngredientName = (name: string) => {
+    const cleanedName = name.toLowerCase().trim();
+
+    const aliases: Record<string, string> = {
+      "black beans": "blackBean",
+      "black bean": "blackBean",
+      "kidney beans": "kidneyBean",
+      "kidney bean": "kidneyBean",
+      "brown sugar": "brownSugar",
+      "olive oil": "oliveOil",
+      "vegetable oil": "vegetableOil",
+      "peanut butter": "peanutButter",
+      "tomato sauce": "tomatoSauce",
+      "sour cream": "sourCream",
+      "chicken broth": "broth",
+      "beef broth": "broth",
+      "vegetable broth": "broth",
     };
-    setIngredients(updatedIngredients);
+
+    if (aliases[cleanedName]) return aliases[cleanedName];
+
+    if (cleanedName.endsWith("es")) return cleanedName.slice(0, -2);
+    if (cleanedName.endsWith("s")) return cleanedName.slice(0, -1);
+
+    return cleanedName;
   };
-
-  const addIngredient = () => {
-    setIngredients([...ingredients, { name: "", quantity: "", unit: "" }]);
-  };
-
-  const removeIngredient = (indexToRemove: number) => {
-    if (ingredients.length === 1) return;
-
-    setIngredients(ingredients.filter((_, index) => index !== indexToRemove));
-  };
-
- const normalizeIngredientName = (name: string) => {
-  const cleanedName = name.toLowerCase().trim();
-
-  const aliases: Record<string, string> = {
-    "black beans": "blackBean",
-    "black bean": "blackBean",
-    "kidney beans": "kidneyBean",
-    "kidney bean": "kidneyBean",
-    "brown sugar": "brownSugar",
-    "olive oil": "oliveOil",
-    "vegetable oil": "vegetableOil",
-    "peanut butter": "peanutButter",
-    "tomato sauce": "tomatoSauce",
-    "sour cream": "sourCream",
-    "chicken broth": "broth",
-    "beef broth": "broth",
-    "vegetable broth": "broth",
-  };
-
-  if (aliases[cleanedName]) return aliases[cleanedName];
-
-  if (cleanedName.endsWith("es")) return cleanedName.slice(0, -2);
-  if (cleanedName.endsWith("s")) return cleanedName.slice(0, -1);
-
-  return cleanedName;
-};
 
   const calculateNutrition = (): Nutrition => {
     const totals: Nutrition = {
@@ -246,7 +200,7 @@ function CreateRecipe() {
       fat: 0,
     };
 
-    ingredients.forEach((ingredient) => {
+    parsedIngredients.forEach((ingredient) => {
       const name = normalizeIngredientName(ingredient.name);
       const data = nutritionData[name];
       const quantity = Number(ingredient.quantity) || 1;
@@ -271,7 +225,7 @@ function CreateRecipe() {
     fat: servings > 0 ? nutritionTotals.fat / servings : 0,
   };
 
-  const previewIngredients = ingredients.filter(
+  const previewIngredients = parsedIngredients.filter(
     (ingredient) => ingredient.name.trim() !== ""
   );
 
@@ -281,22 +235,22 @@ function CreateRecipe() {
     setTags([]);
     setServings(1);
     setInstructions("");
-    setIngredients([{ name: "", quantity: "", unit: "" }]);
+    setIngredientsText("");
     setIsPublic(false);
   };
 
   const handleTagToggle = (tag: string) => {
-  setTags((currentTags) =>
-    currentTags.includes(tag)
-      ? currentTags.filter((currentTag) => currentTag !== tag)
-      : [...currentTags, tag]
-  );
-};
+    setTags((currentTags) =>
+      currentTags.includes(tag)
+        ? currentTags.filter((currentTag) => currentTag !== tag)
+        : [...currentTags, tag]
+    );
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const validIngredients = ingredients.filter(
+    const validIngredients = parsedIngredients.filter(
       (ingredient) => ingredient.name.trim() !== ""
     );
 
@@ -306,7 +260,7 @@ function CreateRecipe() {
     }
 
     if (validIngredients.length === 0) {
-      setError("At least one ingredient name is required.");
+      setError("At least one ingredient is required.");
       return;
     }
 
@@ -357,7 +311,6 @@ function CreateRecipe() {
 
         navigate("/recipes");
       } else {
-
         console.log("Saving recipe data:", recipeData);
 
         const docRef = await addDoc(collection(db, "recipes"), recipeData);
@@ -380,13 +333,12 @@ function CreateRecipe() {
 
   return (
     <div className="create-recipe-page">
-      <datalist id="unit-options">
-        {unitOptions.map((unit) => (
-          <option key={unit} value={unit} />
-        ))}
-      </datalist>
-
       <h2>{isEditMode ? "Edit Recipe" : "Create Recipe"}</h2>
+
+      <p className="create-recipe-intro">
+        Add your recipe details, paste ingredients one per line, and preview the
+        finished recipe before saving.
+      </p>
 
       {!isEditMode && (
         <div className="create-recipe-actions">
@@ -474,7 +426,7 @@ function CreateRecipe() {
               </label>
             ))}
           </div>
-        </div>        
+        </div>
 
         <div className="form-group">
           <label>Servings:</label>
@@ -487,55 +439,26 @@ function CreateRecipe() {
           />
         </div>
 
-        <div className="form-section">
-          <h3>Ingredients</h3>
+        <div className="form-group">
+          <label htmlFor="ingredients">Ingredients:</label>
+          <textarea
+            id="ingredients"
+            className="recipe-textarea ingredients-textarea"
+            value={ingredientsText}
+            onChange={(e) => setIngredientsText(e.target.value)}
+            placeholder={`1 lb ground beef
+1 small onion, diced
+2 cloves garlic, minced
+1 tsp salt
+1/2 tsp black pepper`}
+            rows={8}
+            disabled={isSaving}
+          />
 
-          {ingredients.map((ingredient, index) => (
-            <div key={index} className="ingredient-row">
-              <input
-                type="text"
-                placeholder="Name"
-                value={ingredient.name}
-                onChange={(e) =>
-                  handleIngredientChange(index, "name", e.target.value)
-                }
-                disabled={isSaving}
-              />
-
-              <input
-                type="text"
-                placeholder="Quantity"
-                value={ingredient.quantity}
-                onChange={(e) =>
-                  handleIngredientChange(index, "quantity", e.target.value)
-                }
-                disabled={isSaving}
-              />
-
-              <input
-                type="text"
-                placeholder="Unit"
-                list="unit-options"
-                value={ingredient.unit}
-                onChange={(e) =>
-                  handleIngredientChange(index, "unit", e.target.value)
-                }
-                disabled={isSaving}
-              />
-
-              <button
-                type="button"
-                onClick={() => removeIngredient(index)}
-                disabled={isSaving || ingredients.length === 1}
-              >
-                Remove
-              </button>
-            </div>
-          ))}
-
-          <button type="button" onClick={addIngredient} disabled={isSaving}>
-            Add Ingredient
-          </button>
+          <p className="form-helper">
+            Enter one ingredient per line, exactly how you want it to appear on
+            the recipe.
+          </p>
         </div>
 
         <div className="form-group">
@@ -598,11 +521,14 @@ function CreateRecipe() {
 
         <div className="preview-section">
           <h3>Ingredients</h3>
+
           <ul>
             {previewIngredients.length > 0 ? (
               previewIngredients.map((ingredient, index) => (
                 <li key={index}>
-                  {ingredient.quantity} {ingredient.unit} {ingredient.name}
+                  {`${ingredient.quantity || ""} ${ingredient.unit || ""} ${
+                    ingredient.name
+                  }`.trim()}
                 </li>
               ))
             ) : (

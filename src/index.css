@@ -782,6 +782,7 @@ button:disabled {
   transform: translateY(-4px);
   border-color: rgba(205, 133, 63, 0.45);
   box-shadow: 0 18px 42px rgba(73, 42, 20, 0.12);
+  
 }
 
 .kitchen-card-label {
@@ -1079,6 +1080,169 @@ button:disabled {
   }
 }
 
+/* =========================================================
+   SAFE CANNING PAGE
+   File: src/features/kitchen/canning/pages/CanningHome.tsx
+   - CreateCanningRecipe.tsx
+   - SafeCanning.tsx
+   Components:
+   - CanningCard.tsx
+  ========================================================= */
+
+.canning-card-grid {
+  width: min(100%, 1000px);
+  margin: 2rem auto 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+
+.canning-card-grid {
+  width: min(100%, 1000px);
+  margin: 2rem auto 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+
+.canning-card {
+  display: block;
+  background: #ffffff;
+  border: 1px solid #ead7c4;
+  border-radius: 1.25rem;
+  padding: 1.5rem;
+  color: #3f2a1d;
+  text-decoration: none;
+  box-shadow: 0 10px 24px rgba(63, 42, 29, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.canning-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 32px rgba(63, 42, 29, 0.12);
+}
+
+.canning-card h2 {
+  margin-bottom: 0.75rem;
+  color: #5b351f;
+}
+
+.canning-card p {
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+.canning-card span {
+  color: peru;
+  font-weight: 700;
+}
+
+.safe-canning-grid {
+  width: min(100%, 1100px);
+  margin: 2rem auto 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.35rem;
+}
+
+.safe-canning-card {
+  background: #fffaf3;
+  border: 1px solid #ead7c4;
+  border-radius: 1.4rem;
+  padding: 1.75rem;
+  color: #3f2a1d;
+  box-shadow: 0 14px 34px rgba(63, 42, 29, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease,
+    border-color 0.2s ease;
+  display: block;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.safe-canning-action {
+  display: inline-block;
+  margin-top: 1rem;
+  color: peru;
+  font-weight: 700;
+}
+
+.safe-canning-card:hover {
+  transform: translateY(-4px);
+  border-color: #d9a46f;
+  box-shadow: 0 18px 42px rgba(63, 42, 29, 0.12);
+}
+
+.safe-canning-card h2 {
+  margin: 0 0 0.85rem;
+  color: #5b351f;
+  font-size: 1.35rem;
+}
+
+.safe-canning-card p {
+  margin: 0;
+  line-height: 1.65;
+  font-size: 0.98rem;
+}
+
+.warning-card {
+  background: #fff4e8;
+  border-color: #d98245;
+}
+
+.safe-canning-note {
+  width: min(100%, 900px);
+  margin: 1.5rem auto 2rem;
+  background: #fff4e8;
+  border: 1px solid #d98245;
+  border-left: 6px solid #b85f24;
+  border-radius: 1.25rem;
+  padding: 1.4rem 1.6rem;
+  box-shadow: 0 12px 28px rgba(63, 42, 29, 0.1);
+}
+
+.safe-canning-note h2 {
+  margin-bottom: 0.65rem;
+  color: #5b351f;
+}
+
+.safe-canning-note p {
+  line-height: 1.65;
+  margin: 0;
+}
+
+.canning-button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.canning-button-row .secondary-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.safe-canning-tag {
+  display: inline-block;
+  margin-bottom: 0.75rem;
+  color: peru;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 768px) {
+  .canning-card-grid,
+  .safe-canning-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .canning-card-grid {
+    grid-template-columns: 1fr;
+  }
+}
 
 /* =========================================================
    MY RECIPES PAGE
@@ -1202,10 +1366,43 @@ button:disabled {
 
 .recipe-meta-row {
   display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
   align-items: center;
-  gap: 0.75rem;
-  margin-top: 0.35rem;
-  color: #6f6258;
+  margin: 0.5rem 0 1rem;
+}
+
+.servings-pill,
+.category-pill,
+.recipe-tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 0.25rem 0.7rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.servings-pill {
+  background: transparent;
+  border: none;
+  color: #7a5a42;
+  padding-left: 0;
+}
+
+.category-pill {
+  background: #fff4e8;
+  border: 1px solid #d98245;
+  color: #5b351f;
+}
+
+.recipe-tag {
+  background: #fffaf3;
+  border: 1px solid #ead7c4;
+  color: #7a4a24;
 }
 
 .recipe-detail-card {
@@ -1262,6 +1459,19 @@ button:disabled {
 .ingredients-columns li {
   margin-bottom: 0.45rem;
   break-inside: avoid;
+}
+
+.ingredients-textarea {
+  min-height: 220px;
+  resize: vertical;
+  white-space: pre-wrap;
+}
+
+.form-helper {
+  margin-top: 0.4rem;
+  color: #7a5a42;
+  font-size: 0.9rem;
+  line-height: 1.4;
 }
 
 .nutrition-grid {
@@ -1383,33 +1593,157 @@ button:disabled {
    ========================================================= */
 
 .create-recipe-page {
-  max-width: 760px;
+  width: min(100%, 980px);
   margin: 0 auto;
-  padding: 1.5rem;
+  padding: 2.5rem 1.5rem 4rem;
 }
 
 .create-recipe-page h2 {
   text-align: center;
   margin-bottom: 1.5rem;
+  font-size: clamp(1.8rem, 3vw, 2.5rem);
+  color: #3f2a1d;
 }
 
 .create-recipe-actions {
   display: flex;
+  justify-content: center;
   flex-wrap: wrap;
-  gap: 12px;
-  margin: 18px 0 28px;
+   gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.create-recipe-intro {
+  max-width: 680px;
+  margin: -0.75rem auto 1.5rem;
+  text-align: center;
+  color: #7a5a42;
+  line-height: 1.6;
 }
 
 .recipe-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  padding: 1.25rem;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  background: #fff;
-  transition: opacity 0.2s ease;
+  background: #fffaf3;
+  border: 1px solid #ead7c4;
+  border-radius: 1.5rem;
+  padding: 2rem;
+  box-shadow: 0 14px 34px rgba(63, 42, 29, 0.08);
 }
+
+.form-group {
+  margin-bottom: 1.35rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.45rem;
+  color: #3f2a1d;
+  font-weight: 700;
+}
+
+.form-group input[type="text"],
+.form-group input[type="number"],
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  border: 1px solid #d9c3ad;
+  border-radius: 0.9rem;
+  padding: 0.85rem 1rem;
+  font: inherit;
+  color: #3f2a1d;
+  background: #ffffff;
+  outline: none;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: peru;
+  box-shadow: 0 0 0 3px rgba(205, 133, 63, 0.16);
+}
+
+.ingredients-textarea {
+  min-height: 230px;
+  resize: vertical;
+  line-height: 1.6;
+}
+
+.form-group textarea {
+  min-height: 180px;
+  resize: vertical;
+  line-height: 1.6;
+}
+
+.form-helper,
+.helper-text {
+  margin-top: 0.45rem;
+  color: #7a5a42;
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+.checkbox-row {
+  display: flex !important;
+  align-items: flex-start;
+  gap: 0.65rem;
+  margin-bottom: 0;
+}
+
+.checkbox-row input {
+  margin-top: 0.25rem;
+}
+
+.tag-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+.tag-checkbox {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 0.45rem;
+  border: 1px solid #ead7c4;
+  border-radius: 999px;
+  padding: 0.55rem 0.85rem;
+  background: #ffffff;
+  cursor: pointer;
+  font-weight: 600 !important;
+}
+
+.save-button {
+  width: 100%;
+  border: none;
+  border-radius: 999px;
+  padding: 0.95rem 1.4rem;
+  background: peru;
+  color: #ffffff;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 10px 24px rgba(205, 133, 63, 0.24);
+}
+
+.save-button:hover {
+  transform: translateY(-1px);
+}
+
+.recipe-preview-card {
+  margin-top: 2rem;
+  background: #ffffff;
+  border: 1px solid #ead7c4;
+  border-radius: 1.5rem;
+  padding: 2rem;
+  box-shadow: 0 14px 34px rgba(63, 42, 29, 0.08);
+}
+
+@media (max-width: 768px) {
+  .create-recipe-page {
+    padding: 1.5rem 1rem 3rem;
+  }
+
+  .recipe-form,
+  .recipe-preview-card {
+    padding: 1.35rem;
+  }
 
 .recipe-form.saving {
   opacity: 0.7;
@@ -1632,21 +1966,25 @@ button:disabled {
 .recipe-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.4rem;
-  margin-top: 0.75rem;
+  gap: 0.45rem;
+  margin-top: 0.45rem;
+  margin-bottom: 0.75rem;
 }
 
 .recipe-tag {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   width: fit-content;
-  padding: 0.25rem 0.65rem;
+  padding: 0.25rem 0.7rem;
   border-radius: 999px;
   background: #fff7ed;
   border: 1px solid #f1d2b6;
   color: #8b4513;
   font-size: 0.78rem;
-  font-weight: 600;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
 }
 
 
@@ -1674,3 +2012,4 @@ button:disabled {
   .corner-hero
   .corner-card
 */
+}

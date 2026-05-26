@@ -11,23 +11,6 @@ import {
 import { useAuth } from "../../../context/AuthContext";
 import { Link } from "react-router-dom";
 
-const categoryOptions = [
-  "All",
-  "Breakfast",
-  "Chicken",
-  "Beef",
-  "Pork",
-  "Seafood",
-  "Pasta",
-  "Casserole",
-  "Soup",
-  "Salad",
-  "Dessert",
-  "Vegetarian",
-  "Side Dish",
-  "Other",
-];
-
 function Recipes() {
   const { user, loading: authLoading } = useAuth();
   const [recipes, setRecipes] = useState<any[]>([]);
@@ -35,13 +18,13 @@ function Recipes() {
   const [selectedRecipe, setSelectedRecipe] = useState<any | null>(null);
   const [successMessage, setSuccessMessage] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("All");
 
   useEffect(() => {
     if (authLoading) return;
 
     if (!user) {
       setRecipes([]);
+      setSelectedRecipe(null);
       setLoading(false);
       return;
     }
@@ -57,8 +40,13 @@ function Recipes() {
       setRecipes(userRecipes);
 
       setSelectedRecipe((currentSelected: any) => {
-        if (currentSelected) return currentSelected;
-        return userRecipes[0] || null;
+        if (!currentSelected) return userRecipes[0] || null;
+
+        const updatedSelected = userRecipes.find(
+          (recipe) => recipe.id === currentSelected.id
+        );
+
+        return updatedSelected || userRecipes[0] || null;
       });
 
       setLoading(false);
@@ -67,55 +55,80 @@ function Recipes() {
     return () => unsubscribe();
   }, [user, authLoading]);
 
-const handleDelete = async (id: string) => {
-  const confirmed = window.confirm("Delete this recipe?");
-  if (!confirmed) return;
+  const handleDelete = async (id: string) => {
+    const confirmed = window.confirm("Delete this recipe?");
+    if (!confirmed) return;
 
-  try {
-    await deleteDoc(doc(db, "recipes", id));
-    setSuccessMessage("Recipe deleted successfully");
+    try {
+      await deleteDoc(doc(db, "recipes", id));
+      setSuccessMessage("Recipe deleted successfully");
 
-    setTimeout(() => {
-      setSuccessMessage("");
-    }, 2500);
+      setTimeout(() => {
+        setSuccessMessage("");
+      }, 2500);
 
-    if (selectedRecipe?.id === id) {
-      setSelectedRecipe(null);
+      if (selectedRecipe?.id === id) {
+        setSelectedRecipe(null);
+      }
+    } catch (error: any) {
+      console.error("Error deleting recipe:", error);
+      alert(error.message || "Failed to delete recipe.");
     }
-  } catch (error: any) {
-    console.error("Error deleting recipe:", error);
-    alert(error.message || "Failed to delete recipe.");
-  }
-};
+  };
+
+  const formatServings = (servings: number) => {
+    return servings === 1 ? "1 serving" : `${servings} servings`;
+  };
+
+  const formatTag = (tag: string) => {
+    return `#${tag.replace(/\s+/g, "")}`;
+  };
+
+  const filteredRecipes = recipes.filter((recipe) => {
+    const search = searchTerm.toLowerCase().trim();
+
+    if (!search) return true;
+
+    const title = recipe.title?.toLowerCase() || "";
+    const instructions = recipe.instructions?.toLowerCase() || "";
+
+    const tags = Array.isArray(recipe.tags)
+      ? recipe.tags.join(" ").toLowerCase()
+      : "";
+
+    const ingredients = Array.isArray(recipe.ingredients)
+      ? recipe.ingredients
+          .map((ingredient: any) => ingredient.name || "")
+          .join(" ")
+          .toLowerCase()
+      : "";
+
+    return (
+      title.includes(search) ||
+      tags.includes(search) ||
+      ingredients.includes(search) ||
+      instructions.includes(search)
+    );
+  });
 
   if (authLoading || loading) return <p>Loading recipes...</p>;
+
   if (!user) return <p>Please log in to view your recipes.</p>;
+
   if (!recipes.length) {
-  return (
-    <div className="empty-state">
-      <div className="empty-card">
-        <h2>No recipes yet</h2>
-        <p>Start building your collection by creating your first recipe.</p>
+    return (
+      <div className="empty-state">
+        <div className="empty-card">
+          <h2>No recipes yet</h2>
+          <p>Start building your collection by creating your first recipe.</p>
 
-        <Link to="/create-recipe">
-          <button className="primary-btn">Create Recipe</button>
-        </Link>
+          <Link to="/create-recipe">
+            <button className="primary-btn">Create Recipe</button>
+          </Link>
+        </div>
       </div>
-    </div>
-  );
-}
-
-const filteredRecipes = recipes.filter((recipe) => {
-  const matchesSearch = recipe.title
-    .toLowerCase()
-    .includes(searchTerm.toLowerCase());
-
-  const matchesCategory =
-    selectedCategory === "All" ||
-    recipe.category === selectedCategory;
-
-  return matchesSearch && matchesCategory;
-});
+    );
+  }
 
   return (
     <div className="recipes-page">
@@ -131,54 +144,54 @@ const filteredRecipes = recipes.filter((recipe) => {
         </Link>
       </div>
 
-    <div className="recipe-controls">
-      <input
-        type="text"
-        placeholder="Search recipes..."
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-      />
+      <div className="recipe-controls">
+        <input
+          type="text"
+          placeholder="Search by title, tag, ingredient, or keyword..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+      </div>
 
-      <select
-        value={selectedCategory}
-        onChange={(e) => setSelectedCategory(e.target.value)}
-      >
-        {categoryOptions.map((cat) => (
-          <option key={cat} value={cat}>
-            {cat}
-          </option>
-        ))}
-      </select>
-    </div>
-
-      {successMessage && (
-        <div className="success-toast">
-          {successMessage}
-        </div>
-      )}
+      {successMessage && <div className="success-toast">{successMessage}</div>}
 
       <div className="recipes-layout">
         <div className="recipe-list">
-          {filteredRecipes.map((recipe) => (
-            <button
-              key={recipe.id}
-              type="button"
-              className={`recipe-list-item ${
-                selectedRecipe?.id === recipe.id ? "active" : ""
-              }`}
-              onClick={() => setSelectedRecipe(recipe)}
-            >
-              <div className="recipe-list-title-row">
-                <strong>{recipe.title}</strong>
-                <span className="category-pill">{recipe.category || "Other"}</span>
-              </div>
+          {filteredRecipes.length > 0 ? (
+            filteredRecipes.map((recipe) => (
+              <button
+                key={recipe.id}
+                type="button"
+                className={`recipe-list-item ${
+                  selectedRecipe?.id === recipe.id ? "active" : ""
+                }`}
+                onClick={() => setSelectedRecipe(recipe)}
+              >
+                <div className="recipe-list-title-row">
+                  <strong>{recipe.title}</strong>
+                </div>
 
-              <span>{recipe.servings} servings</span>
-              <span>
-                {recipe.nutritionPerServing?.calories?.toFixed?.(1) ?? 0} cal / serving
-              </span>
-            </button>
-          ))}
+                <span>{formatServings(recipe.servings)}</span>
+
+                {recipe.tags?.length > 0 && (
+                  <div className="recipe-tags">
+                    {recipe.tags.map((tag: string) => (
+                      <span key={tag} className="recipe-tag">
+                        {formatTag(tag)}
+                      </span>
+                    ))}
+                  </div>
+                )}
+
+                <span>
+                  {recipe.nutritionPerServing?.calories?.toFixed?.(1) ?? 0} cal
+                  / serving
+                </span>
+              </button>
+            ))
+          ) : (
+            <p className="empty-list-message">No recipes match your search.</p>
+          )}
         </div>
 
         <div className="recipe-detail-card">
@@ -190,29 +203,31 @@ const filteredRecipes = recipes.filter((recipe) => {
                 <h2>{selectedRecipe.title}</h2>
 
                 <div className="recipe-meta-row">
-                  <span className="servings-pill">{selectedRecipe.servings} servings</span>
-
-                  <span className="category-pill">
-                    {selectedRecipe.category || "Other"}
+                  <span className="servings-pill">
+                    {formatServings(selectedRecipe.servings)}
                   </span>
 
                   {selectedRecipe.tags?.map((tag: string) => (
                     <span key={tag} className="recipe-tag">
-                      {tag}
+                      {formatTag(tag)}
                     </span>
                   ))}
                 </div>
-                
-                </div>
+              </div>
 
               <section>
                 <h3>Ingredients</h3>
+
                 <ul className="ingredients-columns">
-                  {selectedRecipe.ingredients?.map((ingredient: any, index: number) => (
-                    <li key={index}>
-                      {ingredient.quantity} {ingredient.unit} {ingredient.name}
-                    </li>
-                  ))}
+                  {selectedRecipe.ingredients?.map(
+                    (ingredient: any, index: number) => (
+                      <li key={index}>
+                        {`${ingredient.quantity || ""} ${
+                          ingredient.unit || ""
+                        } ${ingredient.name || ""}`.trim()}
+                      </li>
+                    )
+                  )}
                 </ul>
               </section>
 
@@ -224,11 +239,20 @@ const filteredRecipes = recipes.filter((recipe) => {
               <section>
                 <h3>Nutrition</h3>
 
+                <p className="helper-text nutrition-disclaimer-text">
+    Nutrition values are estimates for planning purposes only and may vary based
+    on brands, ingredient size, preparation method, and serving size.
+  </p>
+
                 <div className="nutrition-grid">
                   <div>
                     <h4>Total</h4>
-                    <p>Calories: {selectedRecipe.nutritionTotals?.calories ?? 0}</p>
-                    <p>Protein: {selectedRecipe.nutritionTotals?.protein ?? 0}g</p>
+                    <p>
+                      Calories: {selectedRecipe.nutritionTotals?.calories ?? 0}
+                    </p>
+                    <p>
+                      Protein: {selectedRecipe.nutritionTotals?.protein ?? 0}g
+                    </p>
                     <p>Carbs: {selectedRecipe.nutritionTotals?.carbs ?? 0}g</p>
                     <p>Fat: {selectedRecipe.nutritionTotals?.fat ?? 0}g</p>
                   </div>
@@ -237,19 +261,29 @@ const filteredRecipes = recipes.filter((recipe) => {
                     <h4>Per Serving</h4>
                     <p>
                       Calories:{" "}
-                      {selectedRecipe.nutritionPerServing?.calories?.toFixed?.(1) ?? 0}
+                      {selectedRecipe.nutritionPerServing?.calories?.toFixed?.(
+                        1
+                      ) ?? 0}
                     </p>
                     <p>
                       Protein:{" "}
-                      {selectedRecipe.nutritionPerServing?.protein?.toFixed?.(1) ?? 0}g
+                      {selectedRecipe.nutritionPerServing?.protein?.toFixed?.(
+                        1
+                      ) ?? 0}
+                      g
                     </p>
                     <p>
                       Carbs:{" "}
-                      {selectedRecipe.nutritionPerServing?.carbs?.toFixed?.(1) ?? 0}g
+                      {selectedRecipe.nutritionPerServing?.carbs?.toFixed?.(
+                        1
+                      ) ?? 0}
+                      g
                     </p>
                     <p>
                       Fat:{" "}
-                      {selectedRecipe.nutritionPerServing?.fat?.toFixed?.(1) ?? 0}g
+                      {selectedRecipe.nutritionPerServing?.fat?.toFixed?.(1) ??
+                        0}
+                      g
                     </p>
                   </div>
                 </div>
@@ -260,7 +294,10 @@ const filteredRecipes = recipes.filter((recipe) => {
                   <button type="button">Edit Recipe</button>
                 </Link>
 
-                <button type="button" onClick={() => handleDelete(selectedRecipe.id)}>
+                <button
+                  type="button"
+                  onClick={() => handleDelete(selectedRecipe.id)}
+                >
                   Delete Recipe
                 </button>
               </div>

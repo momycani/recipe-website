@@ -10,6 +10,8 @@ import ImportRecipe from "./features/kitchen/pages/ImportRecipe";
 import KitchenHome from "./features/kitchen/pages/KitchenHome.tsx";
 import KitchenLayout from "./features/kitchen/KitchenLayout";
 import NutritionHome from "./features/kitchen/nutrition/pages/NutritionHome";
+import NutritionPage from "./features/kitchen/nutrition/pages/NutritionPage.tsx";
+import FitnessPage from "./features/kitchen/nutrition/pages/FitnessPage.tsx";
 import CanningHome from "./features/kitchen/canning/pages/CanningHome";
 import SafeCanning from "./features/kitchen/canning/pages/SafeCanning";
 import CreateCanningRecipe from "./features/kitchen/canning/pages/CreateCanningRecipe"
@@ -71,7 +73,9 @@ function App() {
           }
         />
 
-        <Route path="/nutrition" element={<NutritionHome />} />
+        <Route path="/nutrition-fitness" element={<NutritionHome />} />
+        <Route path="/nutrition-fitness/nutrition" element={<NutritionPage />} />
+        <Route path="/nutrition-fitness/fitness" element={<FitnessPage />} />
         <Route path="/canning" element={<CanningHome />} />
         <Route path="/canning/safe-canning" element={<SafeCanning />} />
         <Route path="/canning/create" element={<CreateCanningRecipe />} />

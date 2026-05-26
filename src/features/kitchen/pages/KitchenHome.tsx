@@ -56,7 +56,7 @@ function KitchenHome() {
           <span className="kitchen-card-link">Browse recipe bank →</span>
         </Link>
 
-        <Link to="/nutrition" className="kitchen-feature-card">
+        <Link to="/nutrition-fitness" className="kitchen-feature-card">
           <span className="kitchen-card-label">Wellness</span>
           <h3>Nutrition &amp; Fitness</h3>
           <p>

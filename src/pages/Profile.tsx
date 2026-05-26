@@ -57,10 +57,10 @@ function Profile() {
             <strong>{user.email}</strong>
           </div>
 
-          <div className="profile-info-item">
+          {/* <div className="profile-info-item">
             <span>User ID</span>
             <strong>{user.uid}</strong>
-          </div>
+          </div> */}
 
           <div className="profile-info-item">
             <span>Email Verified</span>

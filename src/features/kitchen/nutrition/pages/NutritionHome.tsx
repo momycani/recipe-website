@@ -1,140 +1,51 @@
-import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
-import { auth, db } from "../../../../firebase/firebase";
-import NutritionCalculator from "../components/NutritionCalculator";
-import NutritionSummary from "../components/NutritionSummary";
-import type {
-  NutritionFormData,
-  NutritionResults,
-} from "../types/nutritionProfile";
+import nutritionImage from "../../../../assets/GRAMMA-BISCUIT-NUTRITION.png";
 
 function NutritionHome() {
-  const [formData, setFormData] = useState<NutritionFormData | null>(null);
-  const [results, setResults] = useState<NutritionResults | null>(null);
-  const [message, setMessage] = useState("");
-  const [isSaving, setIsSaving] = useState(false);
-  const [hasCalculated, setHasCalculated] = useState(false);
-
-  useEffect(() => {
-    const loadSavedNutritionProfile = async () => {
-      const user = auth.currentUser;
-
-      if (!user) {
-        return;
-      }
-
-      try {
-        const profileRef = doc(db, "nutritionProfiles", user.uid);
-        const profileSnap = await getDoc(profileRef);
-
-        if (profileSnap.exists()) {
-          const savedProfile = profileSnap.data();
-
-          setFormData(savedProfile.formData as NutritionFormData);
-          setResults(savedProfile.results as NutritionResults);
-          setMessage("Saved nutrition targets loaded.");
-        }
-      } catch (error) {
-        setMessage("Unable to load saved nutrition targets.");
-      }
-    };
-
-    loadSavedNutritionProfile();
-  }, []);
-
-  const handleCalculate = (
-    calculatedFormData: NutritionFormData,
-    calculatedResults: NutritionResults
-  ) => {
-    setFormData(calculatedFormData);
-    setResults(calculatedResults);
-    setHasCalculated(true);
-    setMessage("Targets calculated. Save them to keep these results.");
-  };
-
-  const handleSaveTargets = async () => {
-    const user = auth.currentUser;
-
-    if (!user) {
-      setMessage("Please log in to save your nutrition targets.");
-      return;
-    }
-
-    if (!formData || !results) {
-      setMessage("Calculate your targets before saving.");
-      return;
-    }
-
-    setIsSaving(true);
-    setMessage("");
-
-    try {
-      const profileRef = doc(db, "nutritionProfiles", user.uid);
-
-      await setDoc(
-        profileRef,
-        {
-          userId: user.uid,
-          formData,
-          results,
-          updatedAt: serverTimestamp(),
-        },
-        { merge: true }
-      );
-
-      setMessage(
-        "Nutrition targets saved. You can recalculate and update them anytime."
-      );
-      setHasCalculated(false);
-    } catch (error) {
-         console.error("Nutrition save error:", error);
-      setMessage("Unable to save nutrition targets. Please try again.");
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
   return (
-    <main className="nutrition-page">
-      <section className="kitchen-subpage-header">
-        <p className="kitchen-eyebrow">Nutrition &amp; Fitness</p>
-        <h1>Estimate your wellness targets.</h1>
+    <main className="kitchen-subpage">
+      <section className="kitchen-subpage-hero">
+        <div className="kitchen-subpage-header">
+          <p className="kitchen-eyebrow">Nutrition & Fitness</p>
+          <h1>Support healthier kitchen habits.</h1>
 
-        <p>
-          Calculate calorie and macro needs, save your nutrition targets, and
-          adjust your goals as your activity level or wellness plan changes.
-        </p>
+          <p>
+            Track nutrition, estimate recipe totals, and build out simple
+            fitness tools that support everyday wellness.
+          </p>
 
-        <div className="nutrition-page-actions">
           <Link to="/kitchen" className="secondary-link">
-            Back to Kitchen
-          </Link>
-
-          <Link to="/create-recipe" className="secondary-link">
-            Create Recipe
-          </Link>
-
-          <Link to="/recipes" className="secondary-link">
-            My Recipes
+            ← Back to Kitchen
           </Link>
         </div>
 
-        {message && <p className="nutrition-message">{message}</p>}
+        <div className="kitchen-subpage-image-wrap">
+          <img
+            src={nutritionImage}
+            alt="Gramma enjoying a balanced meal while Biscuit sits by the window"
+            className="kitchen-subpage-image"
+          />
+        </div>
       </section>
 
-      <section className="nutrition-layout">
-        <NutritionCalculator
-          onCalculate={handleCalculate}
-          initialFormData={formData}
-        />
+      <section className="canning-card-grid">
+        <Link to="/nutrition-fitness/nutrition" className="canning-card">
+          <h2>Nutrition</h2>
+          <p>
+            Use the nutrition calculator to estimate totals and per-serving
+            values for recipes.
+          </p>
+          <span>Open Nutrition →</span>
+        </Link>
 
-        <NutritionSummary
-          results={results}
-          onSave={handleSaveTargets}
-          isSaving={isSaving}
-          hasCalculated={hasCalculated}
-        />
+        <Link to="/nutrition-fitness/fitness" className="canning-card">
+          <h2>Fitness</h2>
+          <p>
+            Fitness tools are coming soon, including simple activity tracking
+            and wellness notes.
+          </p>
+          <span>Coming Soon →</span>
+        </Link>
       </section>
     </main>
   );

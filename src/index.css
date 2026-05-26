@@ -1,3 +1,7 @@
+body {
+  font-family: Arial, sans-serif;
+}
+
 /* =========================================================
    GLOBAL / BASE STYLES
    File: src/index.css
@@ -189,6 +193,39 @@ button:disabled {
 }
 
 /* =========================================================
+   COMING SOON PAGE
+   Used for unfinished beta pages
+   ========================================================= */
+
+.coming-soon-page {
+  width: min(1120px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 48px 0 64px;
+}
+
+.coming-soon-card {
+  max-width: 780px;
+  padding: 32px;
+  border-radius: 28px;
+  background: #fff8ef;
+  border: 1px solid rgba(205, 133, 63, 0.25);
+  box-shadow: 0 18px 45px rgba(73, 42, 20, 0.08);
+}
+
+.coming-soon-card h1 {
+  margin: 0;
+  font-size: clamp(2.3rem, 5vw, 4rem);
+  line-height: 1;
+  color: #3b2416;
+}
+
+.coming-soon-card p {
+  margin: 18px 0 24px;
+  line-height: 1.7;
+  color: #5f4433;
+}
+
+/* =========================================================
    LOGIN / REGISTER PAGE
    File: src/pages/Login.tsx
    ========================================================= */
@@ -343,9 +380,9 @@ button:disabled {
    ========================================================= */
 
 .grammas-place-page {
-  width: min(1120px, calc(100% - 32px));
+  width: min(1650px, calc(100% - 32px));
   margin: 0 auto;
-  padding: 48px 0 64px;
+  padding: 48px 20px 64px;
 }
 
 .grammas-place-account-actions {
@@ -362,12 +399,12 @@ button:disabled {
 }
 
 .grammas-place-content {
-  max-width: 650px;
+  max-width: 850px;
 }
 
 .grammas-place-eyebrow {
   margin: 0 0 10px;
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   font-weight: 800;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -483,6 +520,31 @@ button:disabled {
   .grammas-place-section-card {
     padding: 20px;
   }
+}
+
+/* =========================================================
+   NUTRITION DISCLAIMER
+   
+   ========================================================= */
+
+
+.nutrition-disclaimer-text {
+  max-width: 720px;
+  margin: 0.35rem 0 1rem;
+  color: #7a5a42;
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+.nutrition-beta-note {
+  margin-top: 1rem;
+  padding: 0.9rem 1rem;
+  border-radius: 16px;
+  background: #fff8ef;
+  border: 1px solid rgba(205, 133, 63, 0.25);
+  color: #5f4433;
+  font-weight: 700;
+  line-height: 1.5;
 }
 
 
@@ -702,9 +764,9 @@ button:disabled {
    ========================================================= */
 
 .kitchen-home-page {
-  width: min(1120px, calc(100% - 32px));
+  width: min(1650px, calc(100% - 32px));
   margin: 0 auto;
-  padding: 48px 0 64px;
+  padding: 48px 20px 64px;
 }
 
 .kitchen-hero {
@@ -893,6 +955,45 @@ button:disabled {
   margin: 18px 0 24px;
   line-height: 1.7;
   color: #5f4433;
+}
+
+.kitchen-subpage-hero {
+  display: grid;
+  grid-template-columns: 1fr 0.95fr;
+  gap: 2rem;
+  align-items: center;
+}
+
+.kitchen-subpage-image-wrap {
+  display: flex;
+  justify-content: center;
+}
+
+.kitchen-subpage-image {
+  width: min(100%, 520px);
+  height: 360px;
+  border-radius: 28px;
+  object-fit: cover;
+  object-position: center;
+  box-shadow: 0 24px 60px rgba(73, 42, 20, 0.16);
+  border: 1px solid rgba(205, 133, 63, 0.22);
+}
+
+@media (max-width: 900px) {
+  .kitchen-subpage-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .kitchen-subpage-image {
+    height: 300px;
+  }
+}
+
+@media (max-width: 520px) {
+  .kitchen-subpage-image {
+    height: 240px;
+    border-radius: 22px;
+  }
 }
 
 /* =========================================================
@@ -1090,18 +1191,10 @@ button:disabled {
   ========================================================= */
 
 .canning-card-grid {
-  width: min(100%, 1000px);
+  width: min(100%, 1100px);
   margin: 2rem auto 0;
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1.25rem;
-}
-
-.canning-card-grid {
-  width: min(100%, 1000px);
-  margin: 2rem auto 0;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1.25rem;
 }
 
@@ -1233,12 +1326,24 @@ button:disabled {
   text-transform: uppercase;
 }
 
+@media (max-width: 900px) {
+  .canning-card-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 @media (max-width: 768px) {
   .canning-card-grid,
   .safe-canning-grid {
     grid-template-columns: 1fr;
   }
 
+  .canning-card-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 650px) {
   .canning-card-grid {
     grid-template-columns: 1fr;
   }
@@ -1593,9 +1698,9 @@ button:disabled {
    ========================================================= */
 
 .create-recipe-page {
-  width: min(100%, 980px);
+  width: min(100%, 1120px);
   margin: 0 auto;
-  padding: 2.5rem 1.5rem 4rem;
+  padding: 2.75rem 1.5rem 4rem;
 }
 
 .create-recipe-page h2 {
@@ -1603,14 +1708,6 @@ button:disabled {
   margin-bottom: 1.5rem;
   font-size: clamp(1.8rem, 3vw, 2.5rem);
   color: #3f2a1d;
-}
-
-.create-recipe-actions {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-   gap: 0.75rem;
-  margin-bottom: 1.5rem;
 }
 
 .create-recipe-intro {
@@ -1621,15 +1718,31 @@ button:disabled {
   line-height: 1.6;
 }
 
+.create-recipe-actions {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
 .recipe-form {
   background: #fffaf3;
   border: 1px solid #ead7c4;
   border-radius: 1.5rem;
-  padding: 2rem;
+  padding: 2.25rem;
   box-shadow: 0 14px 34px rgba(63, 42, 29, 0.08);
 }
 
-.form-group {
+.recipe-form.saving {
+  opacity: 0.7;
+}
+
+.form-group,
+.form-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
   margin-bottom: 1.35rem;
 }
 
@@ -1661,14 +1774,14 @@ button:disabled {
   box-shadow: 0 0 0 3px rgba(205, 133, 63, 0.16);
 }
 
-.ingredients-textarea {
-  min-height: 230px;
+.form-group textarea {
+  min-height: 180px;
   resize: vertical;
   line-height: 1.6;
 }
 
-.form-group textarea {
-  min-height: 180px;
+.ingredients-textarea {
+  min-height: 230px;
   resize: vertical;
   line-height: 1.6;
 }
@@ -1686,6 +1799,7 @@ button:disabled {
   align-items: flex-start;
   gap: 0.65rem;
   margin-bottom: 0;
+  cursor: pointer;
 }
 
 .checkbox-row input {
@@ -1706,12 +1820,15 @@ button:disabled {
   border-radius: 999px;
   padding: 0.55rem 0.85rem;
   background: #ffffff;
+  color: #5f3b1d;
   cursor: pointer;
+  font-size: 0.9rem;
   font-weight: 600 !important;
 }
 
 .save-button {
   width: 100%;
+  margin-top: 0.5rem;
   border: none;
   border-radius: 999px;
   padding: 0.95rem 1.4rem;
@@ -1720,10 +1837,30 @@ button:disabled {
   font-weight: 800;
   cursor: pointer;
   box-shadow: 0 10px 24px rgba(205, 133, 63, 0.24);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.6rem;
 }
 
 .save-button:hover {
   transform: translateY(-1px);
+}
+
+.save-button:disabled {
+  background: #caa17a;
+  color: #ffffff;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid #ffffff;
+  border-top: 2px solid transparent;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
 }
 
 .recipe-preview-card {
@@ -1731,8 +1868,66 @@ button:disabled {
   background: #ffffff;
   border: 1px solid #ead7c4;
   border-radius: 1.5rem;
-  padding: 2rem;
+  padding: 2.25em;
   box-shadow: 0 14px 34px rgba(63, 42, 29, 0.08);
+}
+
+.recipe-preview-card h2 {
+  text-align: left;
+  margin-bottom: 1rem;
+}
+
+.preview-section {
+  margin-top: 1.25rem;
+}
+
+.preview-subsection {
+  margin-top: 1rem;
+}
+
+.nutrition-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.nutrition-column:first-child {
+  border-right: 1px solid #ead7c4;
+  padding-right: 1rem;
+}
+
+.nutrition-column:last-child {
+  padding-left: 1rem;
+}
+
+/* =========================================================
+   TAGS / RECIPE TAG UI
+   Used by ImportRecipe and recipe display cards
+   ========================================================= */
+
+.recipe-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-top: 0.45rem;
+  margin-bottom: 0.75rem;
+}
+
+.recipe-tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  padding: 0.25rem 0.7rem;
+  border-radius: 999px;
+  background: #fff7ed;
+  border: 1px solid #f1d2b6;
+  color: #8b4513;
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
 }
 
 @media (max-width: 768px) {
@@ -1745,111 +1940,19 @@ button:disabled {
     padding: 1.35rem;
   }
 
-.recipe-form.saving {
-  opacity: 0.7;
-}
-
-.form-group,
-.form-section {
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-}
-
-.form-group input,
-.form-group textarea,
-.ingredient-row input {
-  padding: 0.45rem;
-  border: 1px solid #999;
-  border-radius: 4px;
-  font-size: 1rem;
-}
-
-.form-group textarea {
-  min-height: 100px;
-  resize: vertical;
-}
-
-.checkbox-row {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  cursor: pointer;
-  font-size: 0.95rem;
-}
-
-.ingredient-row {
-  display: grid;
-  grid-template-columns: 1.5fr 0.75fr 0.9fr auto;
-  gap: 0.75rem;
-  align-items: center;
-  margin-bottom: 0.75rem;
-}
-
-.ingredient-row input {
-  width: 100%;
-}
-
-.save-button {
-  width: 100%;
-  margin-top: 0.5rem;
-  padding: 0.7rem;
-  background: #2563eb;
-  color: #fff;
-  border: none;
-  font-weight: 600;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 0.6rem;
-}
-
-.save-button:disabled {
-  background: #94a3b8;
-  color: #fff;
-}
-
-.spinner {
-  width: 16px;
-  height: 16px;
-  border: 2px solid #fff;
-  border-top: 2px solid transparent;
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-
-.recipe-preview-card {
-  margin-top: 2rem;
-  padding: 1.5rem;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  background: #fafafa;
-}
-
-.recipe-preview-card h2 {
-  text-align: left;
-}
-
-.preview-section {
-  margin-top: 1rem;
-}
-
-.preview-subsection {
-  margin-top: 1rem;
-}
-
-.nutrition-column:first-child {
-  border-right: 1px solid #ddd;
-  padding-right: 1rem;
-}
-
-.nutrition-column:last-child {
-  padding-left: 1rem;
-}
-
-@media (max-width: 650px) {
-  .ingredient-row {
+  .nutrition-grid {
     grid-template-columns: 1fr;
+  }
+
+  .nutrition-column:first-child {
+    border-right: none;
+    border-bottom: 1px solid #ead7c4;
+    padding-right: 0;
+    padding-bottom: 1rem;
+  }
+
+  .nutrition-column:last-child {
+    padding-left: 0;
   }
 }
 
@@ -1940,55 +2043,6 @@ button:disabled {
 
 
 /* =========================================================
-   TAGS / RECIPE TAG UI
-   Used by ImportRecipe and recipe display cards
-   ========================================================= */
-
-.tag-options {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.tag-checkbox {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  padding: 0.45rem 0.7rem;
-  border: 1px solid #f1d2b6;
-  border-radius: 999px;
-  background: #fff7ed;
-  color: #5f3b1d;
-  cursor: pointer;
-  font-size: 0.9rem;
-}
-
-.recipe-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.45rem;
-  margin-top: 0.45rem;
-  margin-bottom: 0.75rem;
-}
-
-.recipe-tag {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: fit-content;
-  padding: 0.25rem 0.7rem;
-  border-radius: 999px;
-  background: #fff7ed;
-  border: 1px solid #f1d2b6;
-  color: #8b4513;
-  font-size: 0.78rem;
-  font-weight: 700;
-  line-height: 1;
-  white-space: nowrap;
-}
-
-
-/* =========================================================
    FUTURE GRAMMA'S GARDEN PAGE
    File: src/features/garden/pages/GardenHome.tsx
    ========================================================= */
@@ -2012,4 +2066,3 @@ button:disabled {
   .corner-hero
   .corner-card
 */
-}

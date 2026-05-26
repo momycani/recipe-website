@@ -13,7 +13,7 @@ import { useAuth } from "../../../context/AuthContext";
 import { nutritionData } from "../data/nutritionData";
 import type { Ingredient, Nutrition } from "../types/nutrition";
 
-const categoryOptions = [
+const tagOptions = [
   "Breakfast",
   "Chicken",
   "Beef",
@@ -26,20 +26,19 @@ const categoryOptions = [
   "Dessert",
   "Vegetarian",
   "Side Dish",
-  "Other",
-];
-
-const tagOptions = [
   "Italian",
   "Mexican",
   "Asian",
   "Gluten Free",
   "Dairy Free",
   "Low Carb",
-  "Vegetarian",
   "Quick Meal",
   "Freezer Friendly",
   "Family Favorite",
+  "Anti-Inflammatory",
+  "Mediterranean",
+  "Slow Cooker",
+  "Pressure Cooker"
 ];
 
 function CreateRecipe() {
@@ -52,7 +51,6 @@ function CreateRecipe() {
   const [successMessage, setSuccessMessage] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [isLoadingRecipe, setIsLoadingRecipe] = useState(false);
-  const [category, setCategory] = useState("Other");
   const [isPublic, setIsPublic] = useState(false);
   const [tags, setTags] = useState<string[]>([]);
 
@@ -96,6 +94,7 @@ function CreateRecipe() {
       importedTitle?: string;
       importedIngredients?: string[];
       importedInstructions?: string;
+      importedTags?: string[];
     } | null;
 
     if (!state || isEditMode) return;
@@ -110,6 +109,10 @@ function CreateRecipe() {
 
     if (state.importedIngredients?.length) {
       setIngredientsText(state.importedIngredients.join("\n"));
+    }
+
+    if (state.importedTags?.length) {
+      setTags(state.importedTags);
     }
   }, [location.state, isEditMode]);
 
@@ -138,9 +141,18 @@ function CreateRecipe() {
         setTitle(recipeData.title || "");
         setServings(recipeData.servings || 1);
         setIsPublic(recipeData.visibility === "public");
-        setCategory(recipeData.category || "Other");
-        setTags(recipeData.tags || []);
         setInstructions(recipeData.instructions || "");
+
+        const savedTags = Array.isArray(recipeData.tags)
+          ? recipeData.tags
+          : [];
+
+        const categoryAsTag =
+          recipeData.category && recipeData.category !== "Other"
+            ? [recipeData.category]
+            : [];
+
+        setTags(Array.from(new Set([...categoryAsTag, ...savedTags])));
 
         const existingIngredients = recipeData.ingredients || [];
 
@@ -229,9 +241,10 @@ function CreateRecipe() {
     (ingredient) => ingredient.name.trim() !== ""
   );
 
+  const primaryTag = tags[0] || "Other";
+
   const resetForm = () => {
     setTitle("");
-    setCategory("Other");
     setTags([]);
     setServings(1);
     setInstructions("");
@@ -280,12 +293,12 @@ function CreateRecipe() {
 
     try {
       const recipeData = {
-        title,
-        category,
+        title: title.trim(),
+        category: primaryTag,
         tags,
         servings,
         ingredients: validIngredients,
-        instructions,
+        instructions: instructions.trim(),
         nutritionTotals,
         nutritionPerServing,
         userId: user.uid,
@@ -297,12 +310,12 @@ function CreateRecipe() {
         const recipeRef = doc(db, "recipes", id);
 
         await updateDoc(recipeRef, {
-          title,
-          category,
+          title: title.trim(),
+          category: primaryTag,
           tags,
           servings,
           ingredients: validIngredients,
-          instructions,
+          instructions: instructions.trim(),
           nutritionTotals,
           nutritionPerServing,
           visibility: isPublic ? "public" : "private",
@@ -311,8 +324,6 @@ function CreateRecipe() {
 
         navigate("/recipes");
       } else {
-        console.log("Saving recipe data:", recipeData);
-
         const docRef = await addDoc(collection(db, "recipes"), recipeData);
         console.log("Recipe saved with ID:", docRef.id);
 
@@ -336,8 +347,8 @@ function CreateRecipe() {
       <h2>{isEditMode ? "Edit Recipe" : "Create Recipe"}</h2>
 
       <p className="create-recipe-intro">
-        Add your recipe details, paste ingredients one per line, and preview the
-        finished recipe before saving.
+        Add your recipe details, paste ingredients one per line, choose helpful
+        tags, and preview the finished recipe before saving.
       </p>
 
       {!isEditMode && (
@@ -368,28 +379,14 @@ function CreateRecipe() {
         className={`recipe-form ${isSaving ? "saving" : ""}`}
       >
         <div className="form-group">
-          <label>Recipe Title:</label>
+          <label htmlFor="recipe-title">Recipe Title:</label>
           <input
+            id="recipe-title"
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             disabled={isSaving}
           />
-        </div>
-
-        <div className="form-group">
-          <label>Category:</label>
-          <select
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            disabled={isSaving}
-          >
-            {categoryOptions.map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
         </div>
 
         <div className="form-group">
@@ -400,6 +397,7 @@ function CreateRecipe() {
               onChange={(e) => setIsPublic(e.target.checked)}
               disabled={isSaving}
             />
+
             <div>
               <span>Share this recipe to the public recipe bank</span>
 
@@ -413,6 +411,11 @@ function CreateRecipe() {
         <div className="form-group">
           <label>Tags:</label>
 
+          <p className="helper-text">
+            Choose any tags that fit. These work like recipe hashtags for
+            organizing and searching.
+          </p>
+
           <div className="tag-options">
             {tagOptions.map((tag) => (
               <label key={tag} className="tag-checkbox">
@@ -422,15 +425,17 @@ function CreateRecipe() {
                   onChange={() => handleTagToggle(tag)}
                   disabled={isSaving}
                 />
-                <span>{tag}</span>
+
+                <span>#{tag.replace(/\s+/g, "")}</span>
               </label>
             ))}
           </div>
         </div>
 
         <div className="form-group">
-          <label>Servings:</label>
+          <label htmlFor="servings">Servings:</label>
           <input
+            id="servings"
             type="number"
             min="1"
             value={servings}
@@ -462,8 +467,9 @@ function CreateRecipe() {
         </div>
 
         <div className="form-group">
-          <label>Instructions:</label>
+          <label htmlFor="instructions">Instructions:</label>
           <textarea
+            id="instructions"
             value={instructions}
             onChange={(e) => setInstructions(e.target.value)}
             disabled={isSaving}
@@ -485,16 +491,23 @@ function CreateRecipe() {
       <div className="recipe-preview-card">
         <h2>{title || "Recipe Preview"}</h2>
 
-        <p>
-          <strong>Servings:</strong> {servings}
-        </p>
+        <div className="recipe-meta-row">
+          <span className="servings-pill">{servings} servings</span>
+
+          {tags.map((tag) => (
+            <span key={tag} className="recipe-tag">
+              #{tag.replace(/\s+/g, "")}
+            </span>
+          ))}
+        </div>
 
         <div className="preview-section">
           <h3>Nutrition</h3>
 
-          <p className="helper-text">
-            Nutrition values are estimates based on common ingredient data.
-          </p>
+          <p className="helper-text nutrition-disclaimer-text">
+  Nutrition values are estimates for planning purposes only and may vary based
+  on brands, ingredient size, preparation method, and serving size.
+</p>
 
           <div className="nutrition-grid">
             <div className="nutrition-column">
@@ -525,7 +538,7 @@ function CreateRecipe() {
           <ul>
             {previewIngredients.length > 0 ? (
               previewIngredients.map((ingredient, index) => (
-                <li key={index}>
+                <li key={`${ingredient.name}-${index}`}>
                   {`${ingredient.quantity || ""} ${ingredient.unit || ""} ${
                     ingredient.name
                   }`.trim()}
